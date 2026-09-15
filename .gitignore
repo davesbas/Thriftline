@@ -8,6 +8,10 @@ bin/
 obj/
 *.user
 
+# Local secrets - real connection strings / JWT keys live here, not in appsettings.json
+**/appsettings.Development.json
+**/appsettings.Local.json
+
 # General
 .vscode/
 *.log
