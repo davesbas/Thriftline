@@ -1,0 +1,6 @@
+@ThriftlineApi_HostAddress = http://localhost:5134
+
+GET {{ThriftlineApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
