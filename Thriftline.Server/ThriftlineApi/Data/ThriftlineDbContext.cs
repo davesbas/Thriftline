@@ -30,5 +30,18 @@ public class ThriftlineDbContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ThriftlineDbContext).Assembly);
+        modelBuilder.Entity<Category>().HasData(
+            new Category { Id = Guid.Parse("11111111-1111-1111-1111-111111111101"), Name = "Fashion Pria" },
+            new Category { Id = Guid.Parse("11111111-1111-1111-1111-111111111102"), Name = "Atasan Pria", ParentCategoryId = Guid.Parse("11111111-1111-1111-1111-111111111101") },
+            new Category { Id = Guid.Parse("11111111-1111-1111-1111-111111111103"), Name = "Celana Pria", ParentCategoryId = Guid.Parse("11111111-1111-1111-1111-111111111101") },
+            new Category { Id = Guid.Parse("11111111-1111-1111-1111-111111111104"), Name = "Fashion Wanita" },
+            new Category { Id = Guid.Parse("11111111-1111-1111-1111-111111111105"), Name = "Atasan Wanita", ParentCategoryId = Guid.Parse("11111111-1111-1111-1111-111111111104") },
+            new Category { Id = Guid.Parse("11111111-1111-1111-1111-111111111106"), Name = "Bawahan Wanita", ParentCategoryId = Guid.Parse("11111111-1111-1111-1111-111111111104") },
+            new Category { Id = Guid.Parse("11111111-1111-1111-1111-111111111107"), Name = "Sepatu" },
+            new Category { Id = Guid.Parse("11111111-1111-1111-1111-111111111108"), Name = "Tas" },
+            new Category { Id = Guid.Parse("11111111-1111-1111-1111-111111111109"), Name = "Elektronik" },
+            new Category { Id = Guid.Parse("11111111-1111-1111-1111-111111111110"), Name = "Aksesoris" }
+        );
+
     }
 }

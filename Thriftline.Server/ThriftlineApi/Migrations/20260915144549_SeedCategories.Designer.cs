@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ThriftlineApi.Data;
@@ -11,9 +12,11 @@ using ThriftlineApi.Data;
 namespace ThriftlineApi.Migrations
 {
     [DbContext(typeof(ThriftlineDbContext))]
-    partial class ThriftlineDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260915144549_SeedCategories")]
+    partial class SeedCategories
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

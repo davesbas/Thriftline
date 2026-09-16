@@ -1,0 +1,234 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using ThriftlineApi.Data;
+using ThriftlineApi.DTOs.Conversations;
+using ThriftlineApi.Models;
+using ThriftlineApi.Models.Enums;
+using ThriftlineApi.Services;
+
+namespace ThriftlineApi.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+[Authorize]
+public class ConversationController : ControllerBase
+{
+    private readonly ThriftlineDbContext _context;
+
+    public ConversationController(ThriftlineDbContext context)
+    {
+        _context = context;
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<List<ConversationSummaryResponse>>> GetMyConversations()
+    {
+        var userId = GetCurrentUserId();
+
+        var conversations = await _context.Conversations
+            .Include(c => c.Store)
+            .Include(c => c.Buyer)
+            .Include(c => c.Product)
+            .Include(c => c.Messages)
+            .Where(c => c.BuyerId == userId || c.Store.OwnerId == userId)
+            .OrderByDescending(c => c.LastMessageAt ?? c.CreatedAt)
+            .ToListAsync();
+
+        return Ok(conversations.Select(MapToSummary).ToList());
+    }
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<ConversationDetailResponse>> GetById(Guid id)
+    {
+        var userId = GetCurrentUserId();
+
+        var conversation = await _context.Conversations
+            .Include(c => c.Store)
+            .Include(c => c.Buyer)
+            .Include(c => c.Product)
+            .Include(c => c.Messages)
+                .ThenInclude(m => m.Sender)
+            .FirstOrDefaultAsync(c => c.Id == id);
+
+        if (conversation is null)
+        {
+            return NotFound();
+        }
+
+        if (!IsParticipant(conversation, userId))
+        {
+            return Forbid();
+        }
+
+        return Ok(MapToDetail(conversation));
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<ConversationDetailResponse>> StartConversation(StartConversationRequest request)
+    {
+        var userId = GetCurrentUserId();
+
+        var store = await _context.Stores.FirstOrDefaultAsync(s => s.Id == request.StoreId);
+        if (store is null)
+        {
+            return NotFound("Toko tidak ditemukan.");
+        }
+
+        if (store.OwnerId == userId)
+        {
+            return BadRequest("Tidak bisa memulai percakapan dengan toko sendiri.");
+        }
+
+        if (request.ProductId.HasValue)
+        {
+            var productExists = await _context.Products.AnyAsync(p => p.Id == request.ProductId && p.StoreId == store.Id);
+            if (!productExists)
+            {
+                return BadRequest("Produk tidak ditemukan di toko ini.");
+            }
+        }
+
+        var existing = await _context.Conversations
+            .Include(c => c.Store)
+            .Include(c => c.Buyer)
+            .Include(c => c.Product)
+            .Include(c => c.Messages)
+                .ThenInclude(m => m.Sender)
+            .FirstOrDefaultAsync(c => c.BuyerId == userId && c.StoreId == request.StoreId);
+
+        if (existing is not null)
+        {
+            return Ok(MapToDetail(existing));
+        }
+
+        var conversation = new Conversation
+        {
+            BuyerId = userId,
+            StoreId = request.StoreId,
+            ProductId = request.ProductId
+        };
+
+        _context.Conversations.Add(conversation);
+        await _context.SaveChangesAsync();
+
+        await _context.Entry(conversation).Reference(c => c.Store).LoadAsync();
+        await _context.Entry(conversation).Reference(c => c.Buyer).LoadAsync();
+        if (conversation.ProductId.HasValue)
+        {
+            await _context.Entry(conversation).Reference(c => c.Product).LoadAsync();
+        }
+
+        return CreatedAtAction(nameof(GetById), new { id = conversation.Id }, MapToDetail(conversation));
+    }
+
+    [HttpPost("{id}/messages")]
+    public async Task<ActionResult<MessageResponse>> SendMessage(Guid id, SendMessageRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Content))
+        {
+            return BadRequest("Pesan tidak boleh kosong.");
+        }
+
+        var userId = GetCurrentUserId();
+
+        var conversation = await _context.Conversations
+            .Include(c => c.Store)
+            .FirstOrDefaultAsync(c => c.Id == id);
+
+        if (conversation is null)
+        {
+            return NotFound();
+        }
+
+        if (!IsParticipant(conversation, userId))
+        {
+            return Forbid();
+        }
+
+        var message = new Message
+        {
+            ConversationId = conversation.Id,
+            SenderId = userId,
+            Content = request.Content
+        };
+
+        _context.Messages.Add(message);
+        conversation.LastMessageAt = DateTime.UtcNow;
+
+        var recipientId = userId == conversation.BuyerId ? conversation.Store.OwnerId : conversation.BuyerId;
+        NotificationHelper.QueueNotification(
+            _context,
+            recipientId,
+            NotificationType.Chat,
+            "Pesan baru",
+            request.Content.Length > 100 ? request.Content[..100] + "..." : request.Content,
+            "Conversation",
+            conversation.Id);
+
+        await _context.SaveChangesAsync();
+
+        await _context.Entry(message).Reference(m => m.Sender).LoadAsync();
+
+        return Ok(MapToMessageResponse(message));
+    }
+
+    private static bool IsParticipant(Conversation conversation, Guid userId)
+    {
+        return conversation.BuyerId == userId || conversation.Store.OwnerId == userId;
+    }
+
+    private Guid GetCurrentUserId()
+    {
+        return Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+    }
+
+    private static ConversationSummaryResponse MapToSummary(Conversation c)
+    {
+        var lastMessage = c.Messages.OrderByDescending(m => m.SentAt).FirstOrDefault();
+
+        return new ConversationSummaryResponse
+        {
+            Id = c.Id,
+            StoreId = c.StoreId,
+            StoreName = c.Store.Name,
+            BuyerId = c.BuyerId,
+            BuyerName = c.Buyer.FullName,
+            ProductId = c.ProductId,
+            ProductName = c.Product?.Name,
+            CreatedAt = c.CreatedAt,
+            LastMessageAt = c.LastMessageAt,
+            LastMessagePreview = lastMessage?.Content
+        };
+    }
+
+    private static ConversationDetailResponse MapToDetail(Conversation c)
+    {
+        return new ConversationDetailResponse
+        {
+            Id = c.Id,
+            StoreId = c.StoreId,
+            StoreName = c.Store.Name,
+            BuyerId = c.BuyerId,
+            BuyerName = c.Buyer.FullName,
+            ProductId = c.ProductId,
+            ProductName = c.Product?.Name,
+            CreatedAt = c.CreatedAt,
+            Messages = c.Messages.OrderBy(m => m.SentAt).Select(MapToMessageResponse).ToList()
+        };
+    }
+
+    private static MessageResponse MapToMessageResponse(Message m)
+    {
+        return new MessageResponse
+        {
+            Id = m.Id,
+            SenderId = m.SenderId,
+            SenderName = m.Sender.FullName,
+            Content = m.Content,
+            IsRead = m.IsRead,
+            SentAt = m.SentAt
+        };
+    }
+}
