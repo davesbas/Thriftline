@@ -1,0 +1,115 @@
+<app-header />
+<div class="my-posts-page">
+  <a routerLink="/profile" class="back-link">
+    <mat-icon>arrow_back</mat-icon>
+    Kembali
+  </a>
+
+  <div class="my-posts-page__header">
+    <h1>Postingan Saya</h1>
+    <a mat-flat-button color="primary" routerLink="/forum">
+      <mat-icon>add</mat-icon>
+      Buat di Forum
+    </a>
+  </div>
+
+  @if (isLoading()) {
+    <p class="my-posts-status">Memuat postingan...</p>
+  } @else if (posts().length === 0) {
+    <p class="my-posts-status">Anda belum membuat diskusi apa pun.</p>
+  } @else {
+    <div class="forum-grid">
+      @for (post of posts(); track post.id) {
+        @if (post.thumbnailUrl) {
+          <div class="forum-card">
+            <a class="forum-card__image-wrap" [routerLink]="['/forum', post.id]">
+              <img [src]="post.thumbnailUrl" [alt]="post.title" />
+
+              <div class="forum-card__author-overlay">
+                @if (post.authorAvatarUrl) {
+                  <img class="forum-card__avatar-img" [src]="post.authorAvatarUrl" alt="" />
+                } @else {
+                  <span class="forum-card__avatar" [style.background]="avatarColor(post.authorName)">
+                    {{ post.authorName.charAt(0) }}
+                  </span>
+                }
+                <span class="forum-card__author-name">{{ post.authorName }}</span>
+              </div>
+            </a>
+
+            <button class="forum-card__menu" mat-icon-button [matMenuTriggerFor]="menu" aria-label="Opsi">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item (click)="deletePost($event, post.id)">
+                <mat-icon>delete_outline</mat-icon>
+                <span>Hapus</span>
+              </button>
+            </mat-menu>
+
+            <div class="forum-card__stats forum-card__stats--overlay">
+              <button type="button" class="forum-card__stat" (click)="toggleLike($event, post)">
+                <mat-icon>{{ post.isLikedByMe ? 'favorite' : 'favorite_border' }}</mat-icon>
+                {{ post.likeCount }}
+              </button>
+              <a class="forum-card__stat" [routerLink]="['/forum', post.id]">
+                <mat-icon>chat_bubble</mat-icon>
+                {{ post.commentCount }}
+              </a>
+              @if (post.productId) {
+                <a class="forum-card__stat forum-card__stat--product" [routerLink]="['/product', post.productId]" (click)="$event.stopPropagation()">
+                  <mat-icon>sell</mat-icon>
+                  {{ post.productName }}
+                </a>
+              }
+            </div>
+          </div>
+        } @else {
+          <div class="forum-card forum-card--text">
+            <a class="forum-card__text-link" [routerLink]="['/forum', post.id]">
+              <div class="forum-card__author">
+                @if (post.authorAvatarUrl) {
+                  <img class="forum-card__avatar-img" [src]="post.authorAvatarUrl" alt="" />
+                } @else {
+                  <span class="forum-card__avatar" [style.background]="avatarColor(post.authorName)">
+                    {{ post.authorName.charAt(0) }}
+                  </span>
+                }
+                <span class="forum-card__author-name">&#64;{{ post.authorName }}</span>
+              </div>
+              <p class="forum-card__title">{{ post.title }}</p>
+
+              @if (post.productId) {
+                <span class="forum-card__product-tag">
+                  <mat-icon>sell</mat-icon>
+                  {{ post.productName }}
+                </span>
+              }
+            </a>
+
+            <button class="forum-card__menu" mat-icon-button [matMenuTriggerFor]="menuText" aria-label="Opsi">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menuText="matMenu">
+              <button mat-menu-item (click)="deletePost($event, post.id)">
+                <mat-icon>delete_outline</mat-icon>
+                <span>Hapus</span>
+              </button>
+            </mat-menu>
+
+            <div class="forum-card__stats">
+              <button type="button" class="forum-card__stat" (click)="toggleLike($event, post)">
+                <mat-icon>{{ post.isLikedByMe ? 'favorite' : 'favorite_border' }}</mat-icon>
+                {{ post.likeCount }}
+              </button>
+              <a class="forum-card__stat" [routerLink]="['/forum', post.id]">
+                <mat-icon>chat_bubble_outline</mat-icon>
+                {{ post.commentCount }}
+              </a>
+            </div>
+          </div>
+        }
+      }
+    </div>
+  }
+</div>

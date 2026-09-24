@@ -1,0 +1,89 @@
+<app-header />
+<div class="form-page">
+  <h1>{{ isEditMode() ? 'Edit Produk' : 'Tambah Produk' }}</h1>
+
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nama Produk</mat-label>
+      <input matInput formControlName="name" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Kategori</mat-label>
+      <mat-select formControlName="categoryId">
+        @for (category of categories(); track category.id) {
+          <mat-option [value]="category.id">{{ category.name }}</mat-option>
+          @for (sub of category.subCategories; track sub.id) {
+            <mat-option [value]="sub.id">&nbsp;&nbsp;{{ sub.name }}</mat-option>
+          }
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Deskripsi</mat-label>
+      <textarea matInput formControlName="description" rows="3"></textarea>
+    </mat-form-field>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Harga</mat-label>
+        <input matInput type="number" formControlName="price" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Stok</mat-label>
+        <input matInput type="number" formControlName="stock" />
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Kondisi</mat-label>
+      <mat-select formControlName="condition">
+        @for (c of conditions; track c.value) {
+          <mat-option [value]="c.value">{{ c.label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    @if (isEditMode()) {
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Status</mat-label>
+        <mat-select formControlName="status">
+          @for (s of statuses; track s.value) {
+            <mat-option [value]="s.value">{{ s.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    }
+
+        <div class="image-section">
+      <span class="image-section__label">Foto & Video Produk</span>
+      <div class="image-input">
+        <input #fileInput type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime" multiple (change)="onFileSelected($event)" hidden />
+        <button mat-stroked-button type="button" (click)="fileInput.click()" [disabled]="isUploading()">
+          {{ isUploading() ? 'Mengunggah...' : 'Pilih Foto / Video' }}
+        </button>
+      </div>
+
+      <div class="image-list">
+        @for (item of media(); track item.url; let i = $index) {
+          <div class="image-item">
+            @if (item.mediaType === MEDIA_TYPE_VIDEO) {
+              <video [src]="item.url" muted></video>
+            } @else {
+              <img [src]="item.url" alt="" />
+            }
+            <button mat-icon-button type="button" (click)="removeMedia(i)">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+
+    <button mat-flat-button color="primary" type="submit" class="full-width submit-button" [disabled]="isSubmitting()">
+      {{ isSubmitting() ? 'Menyimpan...' : (isEditMode() ? 'Simpan Perubahan' : 'Tambah Produk') }}
+    </button>
+  </form>
+</div>

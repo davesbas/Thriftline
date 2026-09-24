@@ -15,3 +15,5 @@ obj/
 # General
 .vscode/
 *.log
+
+Thriftline.Server/ThriftlineApi/wwwroot/uploads/

@@ -13,6 +13,9 @@ public class Order
     public OrderStatus Status { get; set; } = OrderStatus.Pending;
     public decimal TotalAmount { get; set; }
     public string ShippingAddress { get; set; } = string.Empty;
+    public string ShippingCourier { get; set; } = string.Empty;
+    public decimal ShippingCost { get; set; }
+    public string? Note { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

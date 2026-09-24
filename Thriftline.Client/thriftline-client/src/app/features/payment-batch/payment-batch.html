@@ -1,0 +1,33 @@
+<app-header />
+<div class="payment-page">
+  @if (isLoading()) {
+    <p class="payment-status">Memuat pesanan...</p>
+  } @else if (orders().length === 0) {
+    <p class="payment-status">Pesanan tidak ditemukan.</p>
+  } @else if (isPaid()) {
+    <div class="payment-success">
+      <h1>Pembayaran Berhasil 🎉</h1>
+      <p>{{ orders().length }} pesanan sudah dibayar.</p>
+      <a routerLink="/" class="back-link">Kembali ke Home</a>
+    </div>
+  } @else {
+    <h1 class="payment-page__title">Pembayaran</h1>
+
+    <div class="payment-summary">
+      @for (order of orders(); track order.id) {
+        <p>{{ order.orderNumber }} <strong>{{ formatPrice(order.totalAmount) }}</strong></p>
+      }
+      <p class="payment-summary__total">Total <strong>{{ formatPrice(grandTotal()) }}</strong></p>
+    </div>
+
+    <mat-radio-group [value]="selectedMethod()" (change)="onMethodChange($event)" class="payment-methods">
+      @for (method of methods; track method.value) {
+        <mat-radio-button [value]="method.value">{{ method.label }}</mat-radio-button>
+      }
+    </mat-radio-group>
+
+    <button mat-flat-button color="primary" class="pay-button" [disabled]="isProcessing()" (click)="pay()">
+      {{ isProcessing() ? 'Memproses...' : 'Bayar Sekarang' }}
+    </button>
+  }
+</div>

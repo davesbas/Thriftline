@@ -1,0 +1,27 @@
+<h2 mat-dialog-title>Atur Foto</h2>
+<mat-dialog-content>
+  <div class="aspect-bar">
+    @for (opt of aspectOptions; track opt.label) {
+      <button
+        type="button"
+        class="aspect-chip"
+        [class.aspect-chip--active]="aspectRatio() === opt.value"
+        (click)="setAspect(opt.value)"
+      >
+        {{ opt.label }}
+      </button>
+    }
+  </div>
+
+  <image-cropper
+    [imageFile]="data.file"
+    [maintainAspectRatio]="true"
+    [aspectRatio]="aspectRatio()"
+    format="jpeg"
+    (imageCropped)="onImageCropped($event)"
+  ></image-cropper>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Batal</button>
+  <button mat-flat-button color="primary" (click)="use()">Gunakan</button>
+</mat-dialog-actions>

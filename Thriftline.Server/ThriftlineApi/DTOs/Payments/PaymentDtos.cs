@@ -20,3 +20,9 @@ public class CreatePaymentRequest
     public Guid OrderId { get; set; }
     public PaymentMethod Method { get; set; }
 }
+
+public class CreateBatchPaymentRequest
+{
+    public List<Guid> OrderIds { get; set; } = new();
+    public PaymentMethod Method { get; set; }
+}

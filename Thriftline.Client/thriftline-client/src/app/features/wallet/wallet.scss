@@ -1,0 +1,164 @@
+$primary: #4f6bff;
+
+.wallet-page {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: 100vh;
+  background: #f7f7fb;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #555;
+  text-decoration: none;
+  font-size: 0.85rem;
+  margin-bottom: 12px;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.balance-card {
+  background: $primary;
+  border-radius: 16px;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(79, 107, 255, 0.25);
+}
+
+.balance-card__label {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.balance-card__amount {
+  color: white;
+  font-size: 1.8rem;
+  font-weight: 800;
+}
+
+.topup-section,
+.history-section {
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+  h2 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0 0 12px;
+  }
+}
+
+.quick-amounts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.custom-amount {
+  display: flex;
+  gap: 8px;
+
+  input {
+    flex: 1;
+    border: 1px solid #e5e5ea;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 0.9rem;
+    min-width: 0;
+  }
+}
+
+.wallet-status {
+  text-align: center;
+  color: #888;
+  padding: 30px 0;
+}
+
+.transaction-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.transaction-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f0f0f3;
+
+  &:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+}
+
+.transaction-item__icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #ffe8e8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  mat-icon {
+    color: #e11d48;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &--in {
+    background: #e6f9ee;
+
+    mat-icon {
+      color: #16a34a;
+    }
+  }
+}
+
+.transaction-item__info {
+  flex: 1;
+  min-width: 0;
+
+  p {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  span {
+    font-size: 0.75rem;
+    color: #888;
+  }
+}
+
+.transaction-item__amount {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #e11d48;
+
+  &--in {
+    color: #16a34a;
+  }
+}

@@ -1,0 +1,158 @@
+<app-header />
+<div class="checkout-page">
+  @if (isLoading()) {
+    <p class="checkout-status">Memuat...</p>
+  } @else if (paymentStage() === 'done') {
+    <div class="checkout-success">
+      <h1>Pesanan Berhasil Dibuat & Dibayar 🎉</h1>
+      <a routerLink="/orders" class="back-link">Lihat Pesanan Saya</a>
+    </div>
+  } @else if (paymentStage() === 'waiting') {
+    <div class="waiting-screen">
+      <div class="waiting-screen__timer">
+        <mat-icon>schedule</mat-icon>
+        <span>Bayar sebelum {{ countdownDisplay() }}</span>
+      </div>
+
+      @if (selectedMethod() === 4) {
+        <div class="qr-box">
+          <div class="qr-grid">
+            @for (cell of qrCells(); track $index) {
+              <div class="qr-cell" [class.qr-cell--on]="cell"></div>
+            }
+          </div>
+          <p class="qr-box__hint">Scan kode QRIS di atas menggunakan aplikasi e-wallet atau mobile banking Anda.</p>
+        </div>
+      } @else {
+        <div class="va-box">
+          <span class="va-box__label">{{ selectedMethodLabel() }}</span>
+          <div class="va-box__number">
+            <span>{{ virtualAccountNumber() }}</span>
+            <button mat-icon-button aria-label="Salin nomor" (click)="copyVirtualAccount()">
+              <mat-icon>content_copy</mat-icon>
+            </button>
+          </div>
+          <p class="va-box__hint">Transfer tepat sesuai nominal total di bawah ke nomor Virtual Account di atas.</p>
+        </div>
+      }
+
+      <div class="waiting-screen__amount">
+        <span>Total Bayar</span>
+        <strong>{{ formatPrice(grandTotal()) }}</strong>
+      </div>
+
+      <button mat-flat-button color="primary" class="pay-button" [disabled]="isSubmitting()" (click)="confirmPayment()">
+        {{ isSubmitting() ? 'Memverifikasi...' : 'Saya Sudah Bayar' }}
+      </button>
+
+      @if (countdownSeconds() === 0) {
+        <p class="waiting-screen__expired">Waktu pembayaran habis, tapi Anda tetap bisa konfirmasi di atas jika sudah transfer.</p>
+      }
+    </div>
+  } @else {
+    <h1 class="checkout-page__title">Checkout</h1>
+
+    <div class="address-section">
+      <div class="address-section__header">
+        <span>Alamat Pengiriman</span>
+        <a routerLink="/profile/addresses" class="address-section__manage">Kelola Alamat</a>
+      </div>
+
+      @if (addresses().length === 0) {
+        <p class="address-section__empty">
+          Belum ada alamat tersimpan. <a routerLink="/profile/addresses">Tambah alamat</a>
+        </p>
+      } @else {
+        <div class="address-option-list">
+          @for (address of addresses(); track address.id) {
+            <label class="address-option" [class.address-option--active]="selectedAddressId() === address.id">
+              <input
+                type="radio"
+                name="address"
+                [checked]="selectedAddressId() === address.id"
+                (change)="selectedAddressId.set(address.id)"
+              />
+              <div class="address-option__info">
+                <span class="address-option__label">
+                  {{ address.label }}{{ address.isPrimary ? ' · Utama' : '' }}
+                </span>
+                <span class="address-option__recipient">{{ address.recipientName }} · {{ address.phoneNumber }}</span>
+                <span class="address-option__full">{{ address.fullAddress }}</span>
+              </div>
+            </label>
+          }
+        </div>
+      }
+    </div>
+
+    @for (group of storeGroups(); track group.storeId) {
+      <div class="store-block">
+        <p class="store-block__name">{{ group.storeName }}</p>
+
+        @for (item of group.items; track item.id) {
+          <div class="checkout-item">
+            @if (item.productImageUrl) {
+              <img [src]="item.productImageUrl" [alt]="item.productName" />
+            }
+            <div class="checkout-item__info">
+              <p>{{ item.productName }}</p>
+              <span>{{ item.quantity }}x {{ formatPrice(item.productPrice) }}</span>
+            </div>
+          </div>
+        }
+
+        <div class="courier-list">
+          @for (courier of couriers(); track courier.name) {
+            <label class="courier-option" [class.courier-option--active]="courierFor(group.storeId) === courier.name">
+              <input
+                type="radio"
+                [name]="'courier-' + group.storeId"
+                [checked]="courierFor(group.storeId) === courier.name"
+                (change)="setCourier(group.storeId, courier.name)"
+              />
+              <span class="courier-option__name">{{ courier.name }}</span>
+              <span class="courier-option__cost">{{ formatPrice(courier.cost) }}</span>
+            </label>
+          }
+        </div>
+
+        <textarea
+          class="store-block__note"
+          placeholder="Catatan untuk penjual (opsional)"
+          [value]="noteFor(group.storeId)"
+          (input)="setNote(group.storeId, $any($event.target).value)"
+        ></textarea>
+      </div>
+    }
+
+    <mat-radio-group [value]="selectedMethod()" (change)="selectedMethod.set($event.value)" class="payment-methods">
+      @for (method of methods; track method.value) {
+        <mat-radio-button [value]="method.value" [disabled]="method.value === 3 && walletBalance() < grandTotal()">
+          {{ method.label }}
+          @if (method.value === 3) {
+            <span class="payment-methods__balance">(Saldo: {{ formatPrice(walletBalance()) }})</span>
+          }
+        </mat-radio-button>
+      }
+    </mat-radio-group>
+
+    <div class="checkout-summary">
+      <div class="checkout-summary__row">
+        <span>Subtotal</span>
+        <span>{{ formatPrice(subtotal()) }}</span>
+      </div>
+      <div class="checkout-summary__row">
+        <span>Ongkir</span>
+        <span>{{ formatPrice(shippingTotal()) }}</span>
+      </div>
+      <div class="checkout-summary__total">
+        <span>Total</span>
+        <strong>{{ formatPrice(grandTotal()) }}</strong>
+      </div>
+    </div>
+
+    <button mat-flat-button color="primary" class="pay-button" [disabled]="isSubmitting()" (click)="placeOrder()">
+      {{ isSubmitting() ? 'Memproses...' : 'Buat Pesanan' }}
+    </button>
+  }
+</div>

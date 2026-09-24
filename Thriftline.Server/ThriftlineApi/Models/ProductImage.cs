@@ -1,3 +1,5 @@
+using ThriftlineApi.Models.Enums;
+
 namespace ThriftlineApi.Models;
 
 public class ProductImage
@@ -8,6 +10,7 @@ public class ProductImage
     public Product Product { get; set; } = null!;
 
     public string ImageUrl { get; set; } = string.Empty;
+    public MediaType MediaType { get; set; } = MediaType.Image;
     public bool IsPrimary { get; set; }
     public int DisplayOrder { get; set; }
 }

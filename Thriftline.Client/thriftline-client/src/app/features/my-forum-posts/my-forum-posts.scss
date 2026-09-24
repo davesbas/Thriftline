@@ -1,0 +1,253 @@
+.my-posts-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: 100vh;
+  background: #f7f7fb;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #555;
+  text-decoration: none;
+  font-size: 0.85rem;
+  margin-bottom: 12px;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.my-posts-page__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+
+  h1 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin: 0;
+  }
+
+  a[mat-flat-button] {
+    text-decoration: none;
+  }
+}
+
+.my-posts-status {
+  text-align: center;
+  color: #888;
+  padding: 60px 0;
+}
+
+.forum-grid {
+  columns: 2;
+  column-gap: 12px;
+
+  @media (min-width: 700px) {
+    columns: 3;
+  }
+
+  @media (min-width: 1000px) {
+    columns: 4;
+  }
+}
+
+.forum-card {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  break-inside: avoid;
+  margin-bottom: 12px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.forum-card--text {
+  background: #eef1fb;
+}
+
+.forum-card__image-wrap {
+  display: block;
+  line-height: 0;
+
+  > img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+}
+
+.forum-card__menu {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 28px;
+  height: 28px;
+  line-height: 28px;
+  background: rgba(255, 255, 255, 0.85);
+  z-index: 2;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.forum-card--text .forum-card__menu {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.forum-card__author-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 34px 16px 8px;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.55), transparent);
+}
+
+.forum-card__avatar-img {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.forum-card__avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.forum-card__author-name {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.forum-card--text .forum-card__author-name {
+  color: #333;
+  text-shadow: none;
+}
+
+.forum-card__stats {
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+
+  &--overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding: 8px;
+  }
+}
+
+.forum-card__stat {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  border: none;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #333;
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    color: #ff5470;
+  }
+}
+
+.forum-card--text .forum-card__stats {
+  background: transparent;
+  padding: 0 12px 12px;
+}
+
+.forum-card--text .forum-card__stat {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.forum-card__stat--product {
+  max-width: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-flex;
+}
+
+.forum-card__text-link {
+  display: block;
+  padding: 12px 12px 8px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.forum-card__author {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.forum-card__title {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #333;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.forum-card__product-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #4f6bff;
+  background: white;
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-top: 8px;
+
+  mat-icon {
+    font-size: 13px;
+    width: 13px;
+    height: 13px;
+  }
+}

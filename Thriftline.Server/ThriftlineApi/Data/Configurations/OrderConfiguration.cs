@@ -10,6 +10,9 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
     {
         builder.Property(o => o.OrderNumber).IsRequired().HasMaxLength(50);
         builder.Property(o => o.TotalAmount).HasPrecision(18, 2);
+        builder.Property(o => o.ShippingCourier).IsRequired().HasMaxLength(50);
+        builder.Property(o => o.ShippingCost).HasPrecision(18, 2);
+        builder.Property(o => o.Note).HasMaxLength(500);
         builder.Property(o => o.Status).HasConversion<string>().HasMaxLength(20);
 
         builder.HasIndex(o => o.OrderNumber).IsUnique();

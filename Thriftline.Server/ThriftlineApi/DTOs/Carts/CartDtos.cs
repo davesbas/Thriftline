@@ -7,8 +7,10 @@ public class CartItemResponse
     public string ProductName { get; set; } = string.Empty;
     public decimal ProductPrice { get; set; }
     public string? ProductImageUrl { get; set; }
+    public Guid StoreId { get; set; }
     public string StoreName { get; set; } = string.Empty;
     public bool IsAvailable { get; set; }
+    public int Stock { get; set; }
     public int Quantity { get; set; }
     public decimal Subtotal { get; set; }
 }

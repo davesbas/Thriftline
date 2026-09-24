@@ -1,0 +1,57 @@
+<div class="auth-page">
+  <div class="auth-hero">
+    <div class="auth-hero__overlay">
+      <span class="auth-hero__logo">THRIFTLINE</span>
+      <div class="auth-hero__caption">
+        <p>New to online thrifting?<br />Let me help you!</p>
+        <a routerLink="/register" class="auth-hero__link">Belum punya akun? Daftar</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="auth-form-panel">
+    <mat-card class="auth-card" appearance="outlined">
+      <h1 class="auth-title">Welcome back</h1>
+      <p class="auth-subtitle">Masuk untuk melanjutkan belanja preloved kamu</p>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="outline" class="pill-field full-width">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" formControlName="email" />
+          @if (loginForm.controls.email.hasError('required') && loginForm.controls.email.touched) {
+            <mat-error>Email wajib diisi.</mat-error>
+          }
+          @if (loginForm.controls.email.hasError('email') && loginForm.controls.email.touched) {
+            <mat-error>Format email tidak valid.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="pill-field full-width">
+          <mat-label>Password</mat-label>
+          <input matInput type="password" formControlName="password" />
+          @if (loginForm.controls.password.hasError('required') && loginForm.controls.password.touched) {
+            <mat-error>Password wajib diisi.</mat-error>
+          }
+        </mat-form-field>
+
+        @if (errorMessage()) {
+          <p class="error-text">{{ errorMessage() }}</p>
+        }
+
+        <button mat-flat-button color="primary" type="submit" class="pill-button full-width" [disabled]="isSubmitting()">
+          {{ isSubmitting() ? 'Memproses...' : 'Sign in' }}
+        </button>
+      </form>
+
+      <div class="auth-divider"><span>or</span></div>
+
+      <button mat-flat-button class="pill-button full-width social-button social-button--facebook" disabled
+        title="Belum tersedia">
+        Connect with Facebook
+      </button>
+      <button mat-stroked-button class="pill-button full-width social-button" disabled title="Belum tersedia">
+        Connect with Google
+      </button>
+    </mat-card>
+  </div>
+</div>

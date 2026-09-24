@@ -50,6 +50,9 @@ public class ConversationController : ControllerBase
             .Include(c => c.Product)
             .Include(c => c.Messages)
                 .ThenInclude(m => m.Sender)
+            .Include(c => c.Messages)
+                .ThenInclude(m => m.Product)
+                    .ThenInclude(p => p!.Images)
             .FirstOrDefaultAsync(c => c.Id == id);
 
         if (conversation is null)
@@ -81,10 +84,11 @@ public class ConversationController : ControllerBase
             return BadRequest("Tidak bisa memulai percakapan dengan toko sendiri.");
         }
 
+        Product? requestedProduct = null;
         if (request.ProductId.HasValue)
         {
-            var productExists = await _context.Products.AnyAsync(p => p.Id == request.ProductId && p.StoreId == store.Id);
-            if (!productExists)
+            requestedProduct = await _context.Products.FirstOrDefaultAsync(p => p.Id == request.ProductId && p.StoreId == store.Id);
+            if (requestedProduct is null)
             {
                 return BadRequest("Produk tidak ditemukan di toko ini.");
             }
@@ -96,10 +100,27 @@ public class ConversationController : ControllerBase
             .Include(c => c.Product)
             .Include(c => c.Messages)
                 .ThenInclude(m => m.Sender)
+            .Include(c => c.Messages)
+                .ThenInclude(m => m.Product)
+                    .ThenInclude(p => p!.Images)
             .FirstOrDefaultAsync(c => c.BuyerId == userId && c.StoreId == request.StoreId);
 
         if (existing is not null)
         {
+            if (requestedProduct is not null && existing.ProductId != requestedProduct.Id)
+            {
+                // Just a targeted scalar update to mark "this is the product currently being
+                // discussed" - no message is created here. It's only shown as a pending
+                // attachment on the frontend and actually lands in the chat once the buyer
+                // sends a message while it's attached (see SendMessage).
+                await _context.Conversations
+                    .Where(c => c.Id == existing.Id)
+                    .ExecuteUpdateAsync(setters => setters.SetProperty(c => c.ProductId, requestedProduct.Id));
+
+                existing.ProductId = requestedProduct.Id;
+                await _context.Entry(existing).Reference(c => c.Product).LoadAsync();
+            }
+
             return Ok(MapToDetail(existing));
         }
 
@@ -107,7 +128,7 @@ public class ConversationController : ControllerBase
         {
             BuyerId = userId,
             StoreId = request.StoreId,
-            ProductId = request.ProductId
+            ProductId = requestedProduct?.Id
         };
 
         _context.Conversations.Add(conversation);
@@ -147,11 +168,25 @@ public class ConversationController : ControllerBase
             return Forbid();
         }
 
+        // The product attached from the frontend's "pending" card - only accepted if it
+        // genuinely belongs to this conversation's store, otherwise silently ignored.
+        Guid? productId = null;
+        if (request.ProductId.HasValue)
+        {
+            var belongsToStore = await _context.Products
+                .AnyAsync(p => p.Id == request.ProductId && p.StoreId == conversation.StoreId);
+            if (belongsToStore)
+            {
+                productId = request.ProductId;
+            }
+        }
+
         var message = new Message
         {
             ConversationId = conversation.Id,
             SenderId = userId,
-            Content = request.Content
+            Content = request.Content,
+            ProductId = productId
         };
 
         _context.Messages.Add(message);
@@ -170,6 +205,14 @@ public class ConversationController : ControllerBase
         await _context.SaveChangesAsync();
 
         await _context.Entry(message).Reference(m => m.Sender).LoadAsync();
+        if (message.ProductId.HasValue)
+        {
+            await _context.Entry(message).Reference(m => m.Product).LoadAsync();
+            if (message.Product is not null)
+            {
+                await _context.Entry(message.Product).Collection(p => p.Images).LoadAsync();
+            }
+        }
 
         return Ok(MapToMessageResponse(message));
     }
@@ -228,7 +271,12 @@ public class ConversationController : ControllerBase
             SenderName = m.Sender.FullName,
             Content = m.Content,
             IsRead = m.IsRead,
-            SentAt = m.SentAt
+            SentAt = m.SentAt,
+            ProductId = m.ProductId,
+            ProductName = m.Product?.Name,
+            ProductPrice = m.Product?.Price,
+            ProductImageUrl = m.Product?.Images.FirstOrDefault(i => i.IsPrimary)?.ImageUrl
+                ?? m.Product?.Images.FirstOrDefault()?.ImageUrl
         };
     }
 }

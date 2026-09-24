@@ -1,0 +1,133 @@
+<app-header />
+<div class="detail-page">
+  @if (isLoading()) {
+    <p class="detail-status">Memuat produk...</p>
+  } @else if (!product()) {
+    <p class="detail-status">Produk tidak ditemukan.</p>
+  } @else {
+    <div class="detail-gallery">
+      @if (product()!.media.length > 0) {
+        <div class="carousel">
+          @if (product()!.media[activeImageIndex()].mediaType === MEDIA_TYPE_VIDEO) {
+            <video [src]="product()!.media[activeImageIndex()].url" class="carousel__image" controls></video>
+          } @else {
+            <img [src]="product()!.media[activeImageIndex()].url" [alt]="product()!.name" class="carousel__image" />
+          }
+
+          @if (product()!.media.length > 1) {
+            <button class="carousel__arrow carousel__arrow--prev" (click)="prevImage()" aria-label="Sebelumnya">
+              <mat-icon>chevron_left</mat-icon>
+            </button>
+            <button class="carousel__arrow carousel__arrow--next" (click)="nextImage()" aria-label="Berikutnya">
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+
+            <div class="carousel__dots">
+              @for (item of product()!.media; track item.url; let i = $index) {
+                <button
+                  class="carousel__dot"
+                  [class.carousel__dot--active]="i === activeImageIndex()"
+                  (click)="activeImageIndex.set(i)"
+                  [attr.aria-label]="'Media ' + (i + 1)"
+                ></button>
+              }
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="detail-gallery__placeholder">
+          <mat-icon>image</mat-icon>
+        </div>
+      }
+    </div>
+
+    <div class="detail-info">
+      <a class="detail-info__store" [routerLink]="['/store', product()!.storeId]">{{ product()!.storeName }}</a>
+      <h1 class="detail-info__name">{{ product()!.name }}</h1>
+      <p class="detail-info__price">{{ formatPrice(product()!.price) }}</p>
+
+      @if (reviews().length > 0) {
+        <div class="detail-info__rating">
+          @for (s of stars; track s) {
+            <mat-icon>{{ s <= round(averageRating()) ? 'star' : 'star_border' }}</mat-icon>
+          }
+          <span>{{ averageRating().toFixed(1) }} ({{ reviews().length }} ulasan)</span>
+        </div>
+      }
+
+      <div class="detail-info__tags">
+        <span class="tag">{{ conditionLabel(product()!.condition) }}</span>
+        <span class="tag">{{ product()!.categoryName }}</span>
+      </div>
+
+      @if (product()!.description) {
+        <p class="detail-info__description">{{ product()!.description }}</p>
+      }
+
+      <div class="detail-quantity">
+        <span class="detail-quantity__label">Jumlah</span>
+        <div class="qty-stepper">
+          <button mat-icon-button (click)="decreaseQuantity()" [disabled]="quantity() <= 1">
+            <mat-icon>remove</mat-icon>
+          </button>
+          <span>{{ quantity() }}</span>
+          <button mat-icon-button (click)="increaseQuantity()" [disabled]="quantity() >= product()!.stock">
+            <mat-icon>add</mat-icon>
+          </button>
+        </div>
+        <span class="detail-quantity__stock">Stok: {{ product()!.stock }}</span>
+      </div>
+
+      <div class="detail-actions">
+        <button
+          mat-icon-button
+          class="detail-actions__wishlist"
+          aria-label="Simpan ke wishlist"
+          (click)="toggleWishlist()"
+        >
+          <mat-icon>{{ product()!.isWishlisted ? 'favorite' : 'favorite_border' }}</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          color="primary"
+          class="detail-actions__chat"
+          aria-label="Chat dengan penjual"
+          [disabled]="isStartingChat()"
+          (click)="startChat()"
+        >
+          <mat-icon>chat</mat-icon>
+        </button>
+        <button mat-stroked-button class="detail-actions__cart" [disabled]="isAdding()" (click)="addToCart()">
+          Add to Cart
+        </button>
+        <button mat-flat-button color="primary" class="detail-actions__buy" [disabled]="isAdding()" (click)="buyNow()">
+          Buy Now
+        </button>
+      </div>
+
+      <h2 class="detail-reviews-title">Ulasan ({{ reviews().length }})</h2>
+      @if (reviews().length === 0) {
+        <p class="detail-reviews-status">Belum ada ulasan untuk produk ini.</p>
+      } @else {
+        <div class="detail-reviews-list">
+          @for (review of reviews(); track review.id) {
+            <div class="detail-review-item">
+              <div class="detail-review-item__header">
+                <span class="detail-review-item__author">{{ review.authorName }}</span>
+                <span class="detail-review-item__date">{{ formatDate(review.createdAt) }}</span>
+              </div>
+              <div class="detail-review-item__stars">
+                @for (s of stars; track s) {
+                  <mat-icon>{{ s <= review.rating ? 'star' : 'star_border' }}</mat-icon>
+                }
+              </div>
+              @if (review.comment) {
+                <p class="detail-review-item__comment">{{ review.comment }}</p>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

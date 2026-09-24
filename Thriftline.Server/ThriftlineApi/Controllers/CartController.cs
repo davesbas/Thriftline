@@ -48,10 +48,17 @@ public class CartController : ControllerBase
 
         var userId = GetCurrentUserId();
 
-        var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == request.ProductId);
+        var product = await _context.Products
+            .Include(p => p.Store)
+            .FirstOrDefaultAsync(p => p.Id == request.ProductId);
         if (product is null)
         {
             return NotFound("Produk tidak ditemukan.");
+        }
+
+        if (product.Store.OwnerId == userId)
+        {
+            return BadRequest("Tidak dapat menambahkan produk sendiri ke keranjang.");
         }
 
         if (product.Status != ProductStatus.Available)
@@ -61,6 +68,12 @@ public class CartController : ControllerBase
 
         var existingItem = await _context.CartItems
             .FirstOrDefaultAsync(ci => ci.UserId == userId && ci.ProductId == request.ProductId);
+
+        var requestedQuantity = (existingItem?.Quantity ?? 0) + request.Quantity;
+        if (requestedQuantity > product.Stock)
+        {
+            return BadRequest($"Stok tidak cukup. Tersisa {product.Stock}.");
+        }
 
         if (existingItem is null)
         {
@@ -92,11 +105,17 @@ public class CartController : ControllerBase
         var userId = GetCurrentUserId();
 
         var cartItem = await _context.CartItems
+            .Include(ci => ci.Product)
             .FirstOrDefaultAsync(ci => ci.Id == id && ci.UserId == userId);
 
         if (cartItem is null)
         {
             return NotFound();
+        }
+
+        if (request.Quantity > cartItem.Product.Stock)
+        {
+            return BadRequest($"Stok tidak cukup. Tersisa {cartItem.Product.Stock}.");
         }
 
         cartItem.Quantity = request.Quantity;
@@ -139,8 +158,10 @@ public class CartController : ControllerBase
             ProductPrice = ci.Product.Price,
             ProductImageUrl = ci.Product.Images.FirstOrDefault(i => i.IsPrimary)?.ImageUrl
                 ?? ci.Product.Images.FirstOrDefault()?.ImageUrl,
+            StoreId = ci.Product.StoreId,
             StoreName = ci.Product.Store.Name,
             IsAvailable = ci.Product.Status == ProductStatus.Available,
+            Stock = ci.Product.Stock,
             Quantity = ci.Quantity,
             Subtotal = ci.Product.Price * ci.Quantity
         }).ToList();

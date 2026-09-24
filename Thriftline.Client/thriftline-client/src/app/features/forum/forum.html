@@ -1,0 +1,228 @@
+<app-header />
+<div class="forum-page">
+  <div class="forum-page__header">
+    <h1>Forum Diskusi</h1>
+    <button mat-flat-button color="primary" (click)="toggleComposer()">
+      <mat-icon>add</mat-icon>
+      Buat Diskusi
+    </button>
+  </div>
+
+  @if (showComposer()) {
+    <div class="composer">
+      @if (myStore(); as store) {
+        <div class="composer__identity">
+          <button
+            type="button"
+            class="identity-btn"
+            [class.identity-btn--active]="postAsStoreId === null"
+            (click)="postAsStoreId = null"
+          >
+            Diri Sendiri
+          </button>
+          <button
+            type="button"
+            class="identity-btn"
+            [class.identity-btn--active]="postAsStoreId === store.id"
+            (click)="postAsStoreId = store.id"
+          >
+            @if (store.logoUrl) {
+              <img [src]="store.logoUrl" alt="" />
+            } @else {
+              <mat-icon>storefront</mat-icon>
+            }
+            {{ store.name }}
+          </button>
+        </div>
+      }
+
+      <input class="composer__title" type="text" placeholder="Judul diskusi" [(ngModel)]="newTitle" />
+      <textarea class="composer__content" rows="3" placeholder="Tulis sesuatu..." [(ngModel)]="newContent"></textarea>
+
+      @if (media().length > 0) {
+        <div class="preview">
+          <div class="preview__stage">
+            @if (media()[previewIndex()].mediaType === MEDIA_TYPE_VIDEO) {
+              <video [src]="media()[previewIndex()].url" controls></video>
+            } @else {
+              <img [src]="media()[previewIndex()].url" alt="" />
+            }
+
+            <button class="preview__remove" type="button" (click)="removeMedia(previewIndex())" aria-label="Hapus">
+              <mat-icon>close</mat-icon>
+            </button>
+
+            @if (media().length > 1) {
+              <button class="preview__arrow preview__arrow--prev" type="button" (click)="prevPreview()" aria-label="Sebelumnya">
+                <mat-icon>chevron_left</mat-icon>
+              </button>
+              <button class="preview__arrow preview__arrow--next" type="button" (click)="nextPreview()" aria-label="Berikutnya">
+                <mat-icon>chevron_right</mat-icon>
+              </button>
+            }
+          </div>
+
+          @if (media().length > 1) {
+            <div class="preview__thumbs">
+              @for (item of media(); track item.url; let i = $index) {
+                <button
+                  type="button"
+                  class="preview__thumb"
+                  [class.preview__thumb--active]="i === previewIndex()"
+                  (click)="setPreview(i)"
+                >
+                  @if (item.mediaType === MEDIA_TYPE_VIDEO) {
+                    <video [src]="item.url" muted></video>
+                  } @else {
+                    <img [src]="item.url" alt="" />
+                  }
+                </button>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      @if (myProducts().length > 0) {
+        <div class="composer__product">
+          <button type="button" class="composer__product-trigger" (click)="openProductPicker()">
+            <mat-icon>sell</mat-icon>
+            Lampirkan Produk (opsional)
+          </button>
+
+          @if (selectedProduct(); as sp) {
+            <div class="composer__product-chip">
+              @if (sp.media[0]?.url) {
+                <img [src]="sp.media[0].url" alt="" />
+              }
+              <div class="composer__product-chip-info">
+                <p>{{ sp.name }}</p>
+                <span>{{ formatPrice(sp.price) }}</span>
+              </div>
+              <button mat-icon-button type="button" (click)="clearSelectedProduct()">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          }
+        </div>
+      }
+
+      <div class="composer__actions">
+        <input #fileInput type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime" multiple (change)="onFileSelected($event)" hidden />
+        <button mat-button type="button" (click)="fileInput.click()" [disabled]="isUploading()">
+          <mat-icon>attach_file</mat-icon>
+          {{ isUploading() ? 'Mengunggah...' : 'Foto / Video' }}
+        </button>
+        <span class="composer__spacer"></span>
+        <button mat-button (click)="showComposer.set(false)">Batal</button>
+        <button mat-flat-button color="primary" [disabled]="isSubmitting()" (click)="submitPost()">
+          {{ isSubmitting() ? 'Mengirim...' : 'Posting' }}
+        </button>
+      </div>
+    </div>
+  }
+
+  @if (isLoading()) {
+    <p class="forum-status">Memuat diskusi...</p>
+  } @else if (posts().length === 0) {
+    <p class="forum-status">Belum ada diskusi. Jadilah yang pertama!</p>
+  } @else {
+    <div class="forum-grid">
+      @for (post of posts(); track post.id) {
+        @if (post.thumbnailUrl) {
+          <div class="forum-card">
+            <a class="forum-card__image-wrap" [routerLink]="['/forum', post.id]">
+              <img [src]="post.thumbnailUrl" [alt]="post.title" />
+
+              <div class="forum-card__author-overlay">
+                @if (post.authorAvatarUrl) {
+                  <img class="forum-card__avatar-img" [src]="post.authorAvatarUrl" alt="" />
+                } @else {
+                  <span class="forum-card__avatar" [style.background]="avatarColor(post.authorName)">
+                    {{ post.authorName.charAt(0) }}
+                  </span>
+                }
+                <span class="forum-card__author-name">{{ post.authorName }}</span>
+              </div>
+            </a>
+
+            @if (isOwner(post)) {
+              <button class="forum-card__menu" mat-icon-button [matMenuTriggerFor]="menu" aria-label="Opsi">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="deletePost($event, post.id)">
+                  <mat-icon>delete_outline</mat-icon>
+                  <span>Hapus</span>
+                </button>
+              </mat-menu>
+            }
+
+            <div class="forum-card__stats forum-card__stats--overlay">
+              <button type="button" class="forum-card__stat" (click)="toggleLike($event, post)">
+                <mat-icon>{{ post.isLikedByMe ? 'favorite' : 'favorite_border' }}</mat-icon>
+                {{ post.likeCount }}
+              </button>
+              <a class="forum-card__stat" [routerLink]="['/forum', post.id]">
+                <mat-icon>chat_bubble</mat-icon>
+                {{ post.commentCount }}
+              </a>
+              @if (post.productId) {
+                <a class="forum-card__stat forum-card__stat--product" [routerLink]="['/product', post.productId]" (click)="$event.stopPropagation()">
+                  <mat-icon>sell</mat-icon>
+                  {{ post.productName }}
+                </a>
+              }
+            </div>
+          </div>
+        } @else {
+          <div class="forum-card forum-card--text">
+            <a class="forum-card__text-link" [routerLink]="['/forum', post.id]">
+              <div class="forum-card__author">
+                @if (post.authorAvatarUrl) {
+                  <img class="forum-card__avatar-img" [src]="post.authorAvatarUrl" alt="" />
+                } @else {
+                  <span class="forum-card__avatar" [style.background]="avatarColor(post.authorName)">
+                    {{ post.authorName.charAt(0) }}
+                  </span>
+                }
+                <span class="forum-card__author-name">&#64;{{ post.authorName }}</span>
+              </div>
+              <p class="forum-card__title">{{ post.title }}</p>
+
+              @if (post.productId) {
+                <span class="forum-card__product-tag">
+                  <mat-icon>sell</mat-icon>
+                  {{ post.productName }}
+                </span>
+              }
+            </a>
+
+            @if (isOwner(post)) {
+              <button class="forum-card__menu" mat-icon-button [matMenuTriggerFor]="menuText" aria-label="Opsi">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menuText="matMenu">
+                <button mat-menu-item (click)="deletePost($event, post.id)">
+                  <mat-icon>delete_outline</mat-icon>
+                  <span>Hapus</span>
+                </button>
+              </mat-menu>
+            }
+
+            <div class="forum-card__stats">
+              <button type="button" class="forum-card__stat" (click)="toggleLike($event, post)">
+                <mat-icon>{{ post.isLikedByMe ? 'favorite' : 'favorite_border' }}</mat-icon>
+                {{ post.likeCount }}
+              </button>
+              <a class="forum-card__stat" [routerLink]="['/forum', post.id]">
+                <mat-icon>chat_bubble_outline</mat-icon>
+                {{ post.commentCount }}
+              </a>
+            </div>
+          </div>
+        }
+      }
+    </div>
+  }
+</div>

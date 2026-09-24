@@ -1,0 +1,101 @@
+<app-header />
+<div class="store-page">
+  @if (isLoading()) {
+    <p class="store-status">Memuat...</p>
+  } @else if (!store()) {
+    <div class="store-create">
+      <h1>Buat Toko Anda</h1>
+      <p>Belum punya toko? Buat dulu supaya bisa mulai jualan.</p>
+
+      <form [formGroup]="storeForm" (ngSubmit)="createStore()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nama Toko</mat-label>
+          <input matInput formControlName="name" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Deskripsi (opsional)</mat-label>
+          <textarea matInput formControlName="description" rows="3"></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Alamat (opsional)</mat-label>
+          <input matInput formControlName="address" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>No. Telepon</mat-label>
+          <input matInput formControlName="phoneNumber" placeholder="08xxxxxxxxxx" />
+          @if (storeForm.controls.phoneNumber.hasError('required') && storeForm.controls.phoneNumber.touched) {
+            <mat-error>Nomor HP wajib diisi.</mat-error>
+          }
+          @if (storeForm.controls.phoneNumber.hasError('pattern') && storeForm.controls.phoneNumber.touched) {
+            <mat-error>Format harus 08xxxxxxxxxx atau +628xxxxxxxxxx.</mat-error>
+          }
+        </mat-form-field>
+
+        <details class="store-terms">
+          <summary>Syarat & Ketentuan Toko</summary>
+          <ol>
+            <li>Produk yang dijual harus sesuai dengan deskripsi dan kondisi yang dicantumkan.</li>
+            <li>Dilarang menjual barang palsu, ilegal, atau melanggar hak pihak lain.</li>
+            <li>Toko wajib merespons pembeli dengan wajar dan memproses pesanan tepat waktu.</li>
+            <li>Thriftline berhak menonaktifkan toko yang melanggar ketentuan ini.</li>
+          </ol>
+        </details>
+
+        <mat-checkbox formControlName="agreedToTerms" class="store-terms__checkbox">
+          Saya sudah membaca dan menyetujui Syarat & Ketentuan Toko di atas.
+        </mat-checkbox>
+
+        <button
+          mat-flat-button
+          color="primary"
+          type="submit"
+          class="full-width"
+          [disabled]="isSubmitting()"
+        >
+          {{ isSubmitting() ? 'Memproses...' : 'Buat Toko' }}
+        </button>
+      </form>
+    </div>
+  } @else {
+    <div class="store-header">
+      <div>
+        <h1>{{ store()!.name }}</h1>
+        @if (store()!.description) {
+          <p>{{ store()!.description }}</p>
+        }
+      </div>
+      <button mat-stroked-button routerLink="/store/orders">Pesanan Masuk</button>
+      <button mat-flat-button color="primary" routerLink="/store/products/new">Tambah Produk</button>
+    </div>
+
+    <div class="product-table">
+      @if (products().length === 0) {
+        <p class="store-status">Belum ada produk. Klik "Tambah Produk" untuk mulai jualan.</p>
+      } @else {
+        @for (product of products(); track product.id) {
+          <div class="product-row">
+            <div class="product-row__image">
+              @if (product.media.length > 0) {
+                <img [src]="product.media[0].url" [alt]="product.name" />
+              }
+            </div>
+            <div class="product-row__info">
+              <p class="product-row__name">{{ product.name }}</p>
+              <p class="product-row__meta">{{ formatPrice(product.price) }} &middot; Stok {{ product.stock }}</p>
+              <span class="product-row__status" [attr.data-status]="product.status">
+                {{ statusLabel(product.status) }}
+              </span>
+            </div>
+            <div class="product-row__actions">
+              <button mat-button [routerLink]="['/store/products', product.id, 'edit']">Edit</button>
+              <button mat-button color="warn" (click)="deleteProduct(product)">Hapus</button>
+            </div>
+          </div>
+        }
+      }
+    </div>
+  }
+</div>

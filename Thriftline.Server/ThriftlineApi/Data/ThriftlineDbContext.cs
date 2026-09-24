@@ -23,7 +23,14 @@ public class ThriftlineDbContext : DbContext
     public DbSet<Message> Messages => Set<Message>();
     public DbSet<ForumPost> ForumPosts => Set<ForumPost>();
     public DbSet<ForumComment> ForumComments => Set<ForumComment>();
+    public DbSet<ForumPostLike> ForumPostLikes => Set<ForumPostLike>();
+    public DbSet<ForumPostMedia> ForumPostMedia => Set<ForumPostMedia>();
     public DbSet<Notification> Notifications => Set<Notification>();
+    public DbSet<Wishlist> Wishlists => Set<Wishlist>();
+    public DbSet<ProductReview> ProductReviews => Set<ProductReview>();
+    public DbSet<Address> Addresses => Set<Address>();
+    public DbSet<Wallet> Wallets => Set<Wallet>();
+    public DbSet<WalletTransaction> WalletTransactions => Set<WalletTransaction>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

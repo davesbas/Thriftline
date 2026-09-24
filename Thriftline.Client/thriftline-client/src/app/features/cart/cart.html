@@ -1,0 +1,88 @@
+<app-header />
+<div class="cart-page">
+  <h1 class="cart-page__title">Keranjang Saya</h1>
+
+  @if (isLoading()) {
+    <p class="cart-status">Memuat keranjang...</p>
+  } @else if (items().length === 0) {
+    <p class="cart-status">Keranjang kosong.</p>
+  } @else {
+    <div class="cart-list">
+      @for (group of storeGroups(); track group.storeId) {
+        <div class="store-group">
+          <label class="store-group__header">
+            <input
+              type="checkbox"
+              [checked]="isStoreFullySelected(group)"
+              (change)="toggleStore(group)"
+            />
+            <mat-icon>storefront</mat-icon>
+            <span>{{ group.storeName }}</span>
+          </label>
+
+          @for (item of group.items; track item.id) {
+            <div class="cart-item" [class.cart-item--unavailable]="!item.isAvailable">
+              <input
+                type="checkbox"
+                class="cart-item__checkbox"
+                [checked]="isItemSelected(item.id)"
+                [disabled]="!item.isAvailable"
+                (change)="toggleItem(item)"
+              />
+
+              <div class="cart-item__image">
+                @if (item.productImageUrl) {
+                  <img [src]="item.productImageUrl" [alt]="item.productName" />
+                } @else {
+                  <div class="cart-item__placeholder">
+                    <mat-icon>image</mat-icon>
+                  </div>
+                }
+              </div>
+
+              <div class="cart-item__info">
+                <p class="cart-item__name">{{ item.productName }}</p>
+                @if (!item.isAvailable) {
+                  <p class="cart-item__warning">Produk sudah tidak tersedia</p>
+                }
+                <p class="cart-item__price">{{ formatPrice(item.productPrice) }}</p>
+              </div>
+
+              <div class="cart-item__actions">
+                <div class="qty-stepper">
+                  <button mat-icon-button (click)="changeQuantity(item, -1)" [disabled]="item.quantity <= 1">
+                    <mat-icon>remove</mat-icon>
+                  </button>
+                  <span>{{ item.quantity }}</span>
+                  <button mat-icon-button (click)="changeQuantity(item, 1)">
+                    <mat-icon>add</mat-icon>
+                  </button>
+                </div>
+                <button mat-icon-button aria-label="Hapus" (click)="removeItem(item)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="cart-summary">
+      <div class="cart-summary__row">
+        <span>Subtotal ({{ selectedItemIds().size }} produk)</span>
+        <span>{{ formatPrice(selectedSubtotal()) }}</span>
+      </div>
+
+      <button
+        mat-flat-button
+        color="primary"
+        class="cart-summary__checkout"
+        [disabled]="selectedItemIds().size === 0"
+        (click)="goToCheckout()"
+      >
+        Checkout
+      </button>
+    </div>
+  }
+</div>

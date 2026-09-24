@@ -1,0 +1,158 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.conv-shell {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.conv-shell__title {
+  font-size: 1.3rem;
+  font-weight: 800;
+  margin: 0;
+  padding: 16px 20px 8px;
+}
+
+.conv-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 20px 12px;
+  padding: 8px 12px;
+  background: #f2f2f6;
+  border-radius: 10px;
+
+  mat-icon {
+    color: #999;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  input {
+    border: none;
+    outline: none;
+    flex: 1;
+    font-size: 0.85rem;
+    background: transparent;
+  }
+}
+
+.conv-shell__list {
+  width: 360px;
+  flex-shrink: 0;
+  border-right: 1px solid #eee;
+  overflow-y: auto;
+  background: white;
+
+  @media (max-width: 700px) {
+    width: 100%;
+
+    &--hidden-mobile {
+      display: none;
+    }
+  }
+}
+
+.conv-shell__detail {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+
+  @media (max-width: 700px) {
+    &--hidden-mobile {
+      display: none;
+    }
+  }
+}
+
+.conv-shell__placeholder {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 0.9rem;
+}
+
+.conv-status {
+  text-align: center;
+  color: #888;
+  padding: 40px 20px;
+}
+
+.conv-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.conv-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  cursor: pointer;
+  border-bottom: 1px solid #f4f4f4;
+
+  &:hover {
+    background: #fafafa;
+  }
+
+  &--active {
+    background: #eef1ff;
+  }
+}
+
+.conv-item__avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #4f6bff;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.conv-item__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.conv-item__name {
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin: 0 0 2px;
+}
+
+.conv-item__product {
+  font-size: 0.75rem;
+  color: #4f6bff;
+  margin: 0 0 2px;
+}
+
+.conv-item__preview {
+  font-size: 0.8rem;
+  color: #888;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.conv-item__meta {
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+
+.conv-item__time {
+  font-size: 0.7rem;
+  color: #aaa;
+}

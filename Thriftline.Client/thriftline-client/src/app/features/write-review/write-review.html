@@ -1,0 +1,55 @@
+<app-header />
+<div class="write-review-page">
+  <a routerLink="/orders" class="back-link">
+    <mat-icon>arrow_back</mat-icon>
+    Kembali
+  </a>
+
+  <h1>Tulis Ulasan</h1>
+
+  @if (isLoading()) {
+    <p class="write-review-status">Memuat...</p>
+  } @else if (items().length === 0) {
+    <p class="write-review-status">Tidak ada produk yang perlu diulas saat ini.</p>
+  } @else {
+    <div class="review-form-list">
+      @for (item of items(); track item.orderItemId) {
+        <div class="review-form-card">
+          <div class="review-form-card__product">
+            @if (item.productImageUrl) {
+              <img [src]="item.productImageUrl" [alt]="item.productName" />
+            } @else {
+              <div class="review-form-card__placeholder">
+                <mat-icon>image</mat-icon>
+              </div>
+            }
+            <p>{{ item.productName }}</p>
+          </div>
+
+          <div class="review-form-card__stars">
+            @for (s of stars; track s) {
+              <button type="button" (click)="setRating(item.orderItemId, s)">
+                <mat-icon>{{ s <= getRating(item.orderItemId) ? 'star' : 'star_border' }}</mat-icon>
+              </button>
+            }
+          </div>
+
+          <textarea
+            placeholder="Ceritakan pengalaman Anda dengan produk ini (opsional)"
+            rows="2"
+            (input)="setComment(item.orderItemId, $any($event.target).value)"
+          ></textarea>
+
+          <button
+            mat-flat-button
+            color="primary"
+            [disabled]="isSubmitting(item.orderItemId)"
+            (click)="submit(item)"
+          >
+            {{ isSubmitting(item.orderItemId) ? 'Mengirim...' : 'Kirim Ulasan' }}
+          </button>
+        </div>
+      }
+    </div>
+  }
+</div>

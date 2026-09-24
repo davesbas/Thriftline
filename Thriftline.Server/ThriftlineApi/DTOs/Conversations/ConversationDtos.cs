@@ -22,6 +22,10 @@ public class MessageResponse
     public string Content { get; set; } = string.Empty;
     public bool IsRead { get; set; }
     public DateTime SentAt { get; set; }
+    public Guid? ProductId { get; set; }
+    public string? ProductName { get; set; }
+    public decimal? ProductPrice { get; set; }
+    public string? ProductImageUrl { get; set; }
 }
 
 public class ConversationDetailResponse
@@ -46,4 +50,5 @@ public class StartConversationRequest
 public class SendMessageRequest
 {
     public string Content { get; set; } = string.Empty;
+    public Guid? ProductId { get; set; }
 }

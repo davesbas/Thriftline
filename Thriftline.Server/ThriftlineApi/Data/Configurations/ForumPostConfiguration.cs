@@ -15,5 +15,17 @@ public class ForumPostConfiguration : IEntityTypeConfiguration<ForumPost>
             .WithMany(u => u.ForumPosts)
             .HasForeignKey(fp => fp.UserId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(fp => fp.Product)
+            .WithMany()
+            .HasForeignKey(fp => fp.ProductId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasOne(fp => fp.Store)
+            .WithMany()
+            .HasForeignKey(fp => fp.StoreId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

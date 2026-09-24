@@ -20,5 +20,13 @@ public class MessageConfiguration : IEntityTypeConfiguration<Message>
             .WithMany(u => u.Messages)
             .HasForeignKey(m => m.SenderId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        // Optional product attached to a message (e.g. auto-message when chat starts
+        // from a product page). SetNull so deleting a product doesn't erase chat history.
+        builder.HasOne(m => m.Product)
+            .WithMany()
+            .HasForeignKey(m => m.ProductId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

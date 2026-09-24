@@ -14,5 +14,10 @@ public class Message
     public string Content { get; set; } = string.Empty;
     public bool IsRead { get; set; }
 
+    // Optional product reference so a message can show a product card
+    // (e.g. the auto-message generated when a chat starts from a product page).
+    public Guid? ProductId { get; set; }
+    public Product? Product { get; set; }
+
     public DateTime SentAt { get; set; } = DateTime.UtcNow;
 }

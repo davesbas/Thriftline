@@ -1,0 +1,69 @@
+<app-header />
+<div class="orders-page">
+  <h1 class="orders-page__title">Pesanan Saya</h1>
+
+  <mat-tab-group [selectedIndex]="selectedTabIndex()" (selectedIndexChange)="selectedTabIndex.set($event)">
+    @for (tab of tabs; track tab.label) {
+      <mat-tab [label]="tab.label"></mat-tab>
+    }
+  </mat-tab-group>
+
+  <div class="orders-list">
+    @if (isLoading()) {
+      <p class="orders-status">Memuat pesanan...</p>
+    } @else if (filteredOrders().length === 0) {
+      <p class="orders-status">Tidak ada pesanan di kategori ini.</p>
+    } @else {
+      @for (order of filteredOrders(); track order.id) {
+        <div class="order-card">
+          <div class="order-card__header">
+            <span class="order-card__number">{{ order.orderNumber }}</span>
+            <span class="order-card__status" [attr.data-status]="order.status">{{ order.status }}</span>
+          </div>
+          <p class="order-card__date">{{ formatDate(order.createdAt) }}</p>
+
+          <div class="order-card__items">
+            @for (item of order.items; track item.orderItemId) {
+              <div class="order-item">
+                @if (item.productImageUrl) {
+                  <img [src]="item.productImageUrl" [alt]="item.productName" />
+                } @else {
+                  <div class="order-item__placeholder">
+                    <mat-icon>image</mat-icon>
+                  </div>
+                }
+                <div class="order-item__info">
+                  <p class="order-item__name">{{ item.productName }}</p>
+                  <span class="order-item__qty">{{ item.quantity }}x {{ formatPrice(item.unitPrice) }}</span>
+                </div>
+                @if (order.status === 'Completed') {
+                  @if (item.isReviewed) {
+                    <button mat-stroked-button class="order-item__review" [routerLink]="['/reviews', item.orderItemId]">
+                      Lihat Ulasan
+                    </button>
+                  } @else {
+                    <button mat-stroked-button color="primary" class="order-item__review" routerLink="/reviews/new">
+                      Tulis Ulasan
+                    </button>
+                  }
+                }
+              </div>
+            }
+          </div>
+
+          <div class="order-card__footer">
+            <span class="order-card__total">{{ formatPrice(order.totalAmount) }}</span>
+            @if (order.status === 'Pending') {
+              <div class="order-card__actions">
+                <button mat-stroked-button [disabled]="isCancelling(order.id)" (click)="cancelOrder(order)">
+                  {{ isCancelling(order.id) ? 'Membatalkan...' : 'Batalkan' }}
+                </button>
+                <button mat-flat-button color="primary" (click)="payNow(order)">Bayar Sekarang</button>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    }
+  </div>
+</div>

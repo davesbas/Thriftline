@@ -1,0 +1,61 @@
+<app-header />
+<div class="store-orders-page">
+  <a routerLink="/store" class="back-link">
+    <mat-icon>arrow_back</mat-icon>
+    Kembali
+  </a>
+
+  <h1>Pesanan Masuk</h1>
+
+  @if (isLoading()) {
+    <p class="store-orders-status">Memuat pesanan...</p>
+  } @else if (orders().length === 0) {
+    <p class="store-orders-status">Belum ada pesanan masuk.</p>
+  } @else {
+    <div class="store-orders-list">
+      @for (order of orders(); track order.id) {
+        <div class="store-order-card">
+          <div class="store-order-card__header">
+            <span class="store-order-card__number">{{ order.orderNumber }}</span>
+            <span class="store-order-card__status" [attr.data-status]="order.status">{{ order.status }}</span>
+          </div>
+          <p class="store-order-card__buyer">Pembeli: {{ order.buyerName }}</p>
+          <p class="store-order-card__date">{{ formatDate(order.createdAt) }}</p>
+
+          <div class="store-order-card__items">
+            @for (item of order.items; track item.productId) {
+              <div class="store-order-item">
+                @if (item.productImageUrl) {
+                  <img [src]="item.productImageUrl" [alt]="item.productName" />
+                }
+                <div class="store-order-item__info">
+                  <p>{{ item.productName }}</p>
+                  <span>{{ item.quantity }}x {{ formatPrice(item.unitPrice) }}</span>
+                </div>
+              </div>
+            }
+          </div>
+
+          <p class="store-order-card__address">Kirim ke: {{ order.shippingAddress }} · {{ order.shippingCourier }}</p>
+          @if (order.note) {
+            <p class="store-order-card__note">Catatan pembeli: "{{ order.note }}"</p>
+          }
+
+          <div class="store-order-card__footer">
+            <span class="store-order-card__total">{{ formatPrice(order.totalAmount) }}</span>
+            @if (nextAction(order.status); as action) {
+              <button
+                mat-flat-button
+                color="primary"
+                [disabled]="isUpdating(order.id)"
+                (click)="advanceStatus(order)"
+              >
+                {{ isUpdating(order.id) ? 'Memproses...' : action.label }}
+              </button>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

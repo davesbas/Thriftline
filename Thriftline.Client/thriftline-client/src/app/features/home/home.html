@@ -1,0 +1,85 @@
+<div class="home-page">
+  <app-header />
+
+  <div class="home-search">
+    <mat-icon>search</mat-icon>
+    <input
+      type="text"
+      placeholder="Cari produk preloved..."
+      [(ngModel)]="searchTerm"
+      (keyup.enter)="onSearchSubmit()"
+    />
+  </div>
+
+  <div class="home-categories">
+    <button
+      class="chip"
+      [class.chip--active]="selectedCategoryId() === null"
+      [style.animation-delay.ms]="0"
+      (click)="selectCategory(null)"
+    >
+      Semua
+    </button>
+    @for (category of categories(); track category.id; let i = $index) {
+      @if (category.subCategories.length > 0) {
+        <button
+          class="chip"
+          [class.chip--active]="isCategoryOrChildSelected(category)"
+          [style.animation-delay.ms]="(i + 1) * 60"
+          [matMenuTriggerFor]="subMenu"
+        >
+          {{ category.name }}
+          <mat-icon class="chip__caret">expand_more</mat-icon>
+        </button>
+        <mat-menu #subMenu="matMenu">
+          <button mat-menu-item (click)="selectCategory(category.id)">Semua {{ category.name }}</button>
+          @for (sub of category.subCategories; track sub.id) {
+            <button mat-menu-item (click)="selectCategory(sub.id)">{{ sub.name }}</button>
+          }
+        </mat-menu>
+      } @else {
+        <button
+          class="chip"
+          [class.chip--active]="selectedCategoryId() === category.id"
+          [style.animation-delay.ms]="(i + 1) * 60"
+          (click)="selectCategory(category.id)"
+        >
+          {{ category.name }}
+        </button>
+      }
+    }
+  </div>
+
+  <div class="home-products">
+    <h2 class="home-products__title">Suggested</h2>
+    @if (isLoading()) {
+      <p class="home-products__status">Memuat produk...</p>
+    } @else if (products().length === 0) {
+      <p class="home-products__status">Tidak ada produk ditemukan.</p>
+    } @else {
+      <div class="product-grid">
+        @for (product of products(); track product.id) {
+          <div class="product-card" [routerLink]="['/product', product.id]">
+            <div class="product-card__image">
+              @if (product.primaryImageUrl) {
+                <img [src]="product.primaryImageUrl" [alt]="product.name" />
+              } @else {
+                <div class="product-card__placeholder">
+                  <mat-icon>image</mat-icon>
+                </div>
+              }
+              <button type="button" class="product-card__wishlist" (click)="toggleWishlist($event, product)">
+                <mat-icon>{{ product.isWishlisted ? 'favorite' : 'favorite_border' }}</mat-icon>
+              </button>
+            </div>
+            <div class="product-card__body">
+              <p class="product-card__name">{{ product.name }}</p>
+              <p class="product-card__price">{{ formatPrice(product.price) }}</p>
+              <p class="product-card__store">{{ product.storeName }}</p>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,31 @@
+:host {
+  display: block;
+}
+
+.aspect-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.aspect-chip {
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid #e5e5ea;
+  background: white;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #555;
+  cursor: pointer;
+
+  &--active {
+    background: #4f6bff;
+    border-color: #4f6bff;
+    color: white;
+  }
+}
+
+image-cropper {
+  max-height: 60vh;
+  display: block;
+}

@@ -1,0 +1,61 @@
+<app-header />
+<div class="wallet-page">
+  <a routerLink="/profile" class="back-link">
+    <mat-icon>arrow_back</mat-icon>
+    Kembali
+  </a>
+
+  <div class="balance-card">
+    <span class="balance-card__label">Saldo Dompet</span>
+    <span class="balance-card__amount">{{ formatPrice(balance()) }}</span>
+  </div>
+
+  <div class="topup-section">
+    <h2>Top Up Saldo</h2>
+    <div class="quick-amounts">
+      @for (amount of quickAmounts; track amount) {
+        <button mat-stroked-button [disabled]="isToppingUp()" (click)="topUp(amount)">
+          {{ formatPrice(amount) }}
+        </button>
+      }
+    </div>
+
+    <div class="custom-amount">
+      <input
+        type="number"
+        placeholder="Jumlah lain (min. Rp10.000)"
+        [ngModel]="customAmount()"
+        (ngModelChange)="customAmount.set($event)"
+      />
+      <button mat-flat-button color="primary" [disabled]="isToppingUp()" (click)="topUpCustom()">
+        {{ isToppingUp() ? 'Memproses...' : 'Top Up' }}
+      </button>
+    </div>
+  </div>
+
+  <div class="history-section">
+    <h2>Riwayat Transaksi</h2>
+    @if (isLoading()) {
+      <p class="wallet-status">Memuat...</p>
+    } @else if (transactions().length === 0) {
+      <p class="wallet-status">Belum ada transaksi.</p>
+    } @else {
+      <div class="transaction-list">
+        @for (tx of transactions(); track tx.id) {
+          <div class="transaction-item">
+            <div class="transaction-item__icon" [class.transaction-item__icon--in]="tx.amount > 0">
+              <mat-icon>{{ tx.amount > 0 ? 'south_west' : 'north_east' }}</mat-icon>
+            </div>
+            <div class="transaction-item__info">
+              <p>{{ tx.description }}</p>
+              <span>{{ formatDate(tx.createdAt) }}</span>
+            </div>
+            <span class="transaction-item__amount" [class.transaction-item__amount--in]="tx.amount > 0">
+              {{ tx.amount > 0 ? '+' : '' }}{{ formatPrice(tx.amount) }}
+            </span>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

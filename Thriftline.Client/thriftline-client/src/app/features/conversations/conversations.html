@@ -1,0 +1,51 @@
+<app-header />
+<div class="conv-shell">
+  <div class="conv-shell__list" [class.conv-shell__list--hidden-mobile]="activeId()">
+    <h1 class="conv-shell__title">Chats</h1>
+
+    <div class="conv-search">
+      <mat-icon>search</mat-icon>
+      <input type="text" placeholder="Cari..." [(ngModel)]="searchTerm" />
+    </div>
+
+    @if (isLoading()) {
+      <p class="conv-status">Memuat percakapan...</p>
+    } @else if (filteredConversations().length === 0) {
+      <p class="conv-status">Belum ada percakapan.</p>
+    } @else {
+      <div class="conv-list">
+        @for (conversation of filteredConversations(); track conversation.id) {
+          <div
+            class="conv-item"
+            [class.conv-item--active]="conversation.id === activeId()"
+            (click)="openConversation(conversation)"
+          >
+            <div class="conv-item__avatar" [style.background]="avatarColor(conversation)">
+              {{ otherPartyName(conversation).charAt(0) }}
+            </div>
+            <div class="conv-item__body">
+              <p class="conv-item__name">{{ otherPartyName(conversation) }}</p>
+              @if (conversation.productName) {
+                <p class="conv-item__product">{{ conversation.productName }}</p>
+              }
+              <p class="conv-item__preview">{{ conversation.lastMessagePreview || 'Belum ada pesan' }}</p>
+            </div>
+            <div class="conv-item__meta">
+              <span class="conv-item__time">{{ formatTime(conversation.lastMessageAt) }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <div class="conv-shell__detail" [class.conv-shell__detail--hidden-mobile]="!activeId()">
+    @if (activeId()) {
+      <router-outlet />
+    } @else {
+      <div class="conv-shell__placeholder">
+        <p>Pilih percakapan untuk mulai chat</p>
+      </div>
+    }
+  </div>
+</div>

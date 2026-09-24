@@ -1,0 +1,32 @@
+<h2 mat-dialog-title>Pilih Produk</h2>
+<mat-dialog-content>
+  <div class="search-bar">
+    <mat-icon>search</mat-icon>
+    <input type="text" placeholder="Cari produk..." [ngModel]="search()" (ngModelChange)="search.set($event)" />
+  </div>
+
+  @if (filteredProducts().length === 0) {
+    <p class="empty">Tidak ada produk ditemukan.</p>
+  } @else {
+    <div class="product-list">
+      @for (product of filteredProducts(); track product.id) {
+        <button type="button" class="product-row" (click)="choose(product)">
+          @if (product.media[0]?.url) {
+            <img [src]="product.media[0].url" [alt]="product.name" />
+          } @else {
+            <div class="product-row__placeholder">
+              <mat-icon>image</mat-icon>
+            </div>
+          }
+          <div class="product-row__info">
+            <p class="product-row__name">{{ product.name }}</p>
+            <p class="product-row__price">{{ formatPrice(product.price) }}</p>
+          </div>
+        </button>
+      }
+    </div>
+  }
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()">Tutup</button>
+</mat-dialog-actions>

@@ -1,0 +1,73 @@
+<app-header />
+<div class="payment-page">
+  @if (isLoading()) {
+    <p class="payment-status">Memuat order...</p>
+  } @else if (!order()) {
+    <p class="payment-status">Order tidak ditemukan.</p>
+  } @else if (paymentStage() === 'done') {
+    <div class="payment-success">
+      <h1>Pembayaran Berhasil 🎉</h1>
+      <p>Order {{ order()!.orderNumber }} sudah dibayar.</p>
+      <a routerLink="/" class="back-link">Kembali ke Home</a>
+    </div>
+  } @else if (paymentStage() === 'waiting') {
+    <div class="waiting-screen">
+      <div class="waiting-screen__timer">
+        <mat-icon>schedule</mat-icon>
+        <span>Bayar sebelum {{ countdownDisplay() }}</span>
+      </div>
+
+      @if (selectedMethod() === 4) {
+        <div class="qr-box">
+          <div class="qr-grid">
+            @for (cell of qrCells(); track $index) {
+              <div class="qr-cell" [class.qr-cell--on]="cell"></div>
+            }
+          </div>
+          <p class="qr-box__hint">Scan kode QRIS di atas menggunakan aplikasi e-wallet atau mobile banking Anda.</p>
+        </div>
+      } @else {
+        <div class="va-box">
+          <span class="va-box__label">{{ selectedMethodLabel() }}</span>
+          <div class="va-box__number">
+            <span>{{ virtualAccountNumber() }}</span>
+            <button mat-icon-button aria-label="Salin nomor" (click)="copyVirtualAccount()">
+              <mat-icon>content_copy</mat-icon>
+            </button>
+          </div>
+          <p class="va-box__hint">Transfer tepat sesuai nominal total di bawah ke nomor Virtual Account di atas.</p>
+        </div>
+      }
+
+      <div class="waiting-screen__amount">
+        <span>Total Bayar</span>
+        <strong>{{ formatPrice(order()!.totalAmount) }}</strong>
+      </div>
+
+      <button mat-flat-button color="primary" class="pay-button" [disabled]="isProcessing()" (click)="confirmPayment()">
+        {{ isProcessing() ? 'Memverifikasi...' : 'Saya Sudah Bayar' }}
+      </button>
+
+      @if (countdownSeconds() === 0) {
+        <p class="waiting-screen__expired">Waktu pembayaran habis, tapi Anda tetap bisa konfirmasi di atas jika sudah transfer.</p>
+      }
+    </div>
+  } @else {
+    <h1 class="payment-page__title">Pembayaran</h1>
+
+    <div class="payment-summary">
+      <p>Order: <strong>{{ order()!.orderNumber }}</strong></p>
+      <p>Total: <strong>{{ formatPrice(order()!.totalAmount) }}</strong></p>
+    </div>
+
+    <mat-radio-group [value]="selectedMethod()" (change)="onMethodChange($event)" class="payment-methods">
+      @for (method of methods; track method.value) {
+        <mat-radio-button [value]="method.value">{{ method.label }}</mat-radio-button>
+      }
+    </mat-radio-group>
+
+    <button mat-flat-button color="primary" class="pay-button" [disabled]="isProcessing()" (click)="pay()">
+      {{ isProcessing() ? 'Memproses...' : 'Bayar Sekarang' }}
+    </button>
+  }
+</div>

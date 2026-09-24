@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -17,6 +18,9 @@ public class AuthController : ControllerBase
     private readonly ThriftlineDbContext _context;
     private readonly IConfiguration _configuration;
 
+    // Nomor Indonesia: diawali 08, 8, atau +62/62 lalu 8, total 9-12 digit setelah kode awal.
+    private static readonly Regex PhoneNumberRegex = new(@"^(\+62|62|0)8[1-9][0-9]{6,10}$");
+
     public AuthController(ThriftlineDbContext context, IConfiguration configuration)
     {
         _context = context;
@@ -29,6 +33,16 @@ public class AuthController : ControllerBase
         if (await _context.Users.AnyAsync(u => u.Email == request.Email))
         {
             return Conflict("Email sudah digunakan.");
+        }
+
+        if (string.IsNullOrWhiteSpace(request.PhoneNumber))
+        {
+            return BadRequest("Nomor HP wajib diisi.");
+        }
+
+        if (!PhoneNumberRegex.IsMatch(request.PhoneNumber))
+        {
+            return BadRequest("Format nomor HP tidak valid. Gunakan format 08xxxxxxxxxx atau +628xxxxxxxxxx.");
         }
 
         var user = new User

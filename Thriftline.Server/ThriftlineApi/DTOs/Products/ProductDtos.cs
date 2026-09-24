@@ -2,6 +2,12 @@ using ThriftlineApi.Models.Enums;
 
 namespace ThriftlineApi.DTOs.Products;
 
+public class ProductMediaItem
+{
+    public string Url { get; set; } = string.Empty;
+    public MediaType MediaType { get; set; } = MediaType.Image;
+}
+
 public class ProductSummaryResponse
 {
     public Guid Id { get; set; }
@@ -12,6 +18,7 @@ public class ProductSummaryResponse
     public string? PrimaryImageUrl { get; set; }
     public string StoreName { get; set; } = string.Empty;
     public string CategoryName { get; set; } = string.Empty;
+    public bool IsWishlisted { get; set; }
 }
 
 public class ProductDetailResponse
@@ -27,7 +34,8 @@ public class ProductDetailResponse
     public string CategoryName { get; set; } = string.Empty;
     public Guid StoreId { get; set; }
     public string StoreName { get; set; } = string.Empty;
-    public List<string> ImageUrls { get; set; } = new();
+    public List<ProductMediaItem> Media { get; set; } = new();
+    public bool IsWishlisted { get; set; }
     public DateTime CreatedAt { get; set; }
 }
 
@@ -35,6 +43,7 @@ public class ProductQueryParameters
 {
     public string? Search { get; set; }
     public Guid? CategoryId { get; set; }
+    public Guid? StoreId { get; set; }
     public int Page { get; set; } = 1;
     public int PageSize { get; set; } = 20;
 }
@@ -47,7 +56,7 @@ public class CreateProductRequest
     public decimal Price { get; set; }
     public ProductCondition Condition { get; set; }
     public int Stock { get; set; } = 1;
-    public List<string> ImageUrls { get; set; } = new();
+    public List<ProductMediaItem> Media { get; set; } = new();
 }
 
 public class UpdateProductRequest
@@ -59,5 +68,5 @@ public class UpdateProductRequest
     public ProductCondition Condition { get; set; }
     public int Stock { get; set; }
     public ProductStatus Status { get; set; }
-    public List<string> ImageUrls { get; set; } = new();
+    public List<ProductMediaItem> Media { get; set; } = new();
 }

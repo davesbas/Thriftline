@@ -15,7 +15,7 @@ public class User
 
     // A user optionally owns one store (seller profile).
     public Store? Store { get; set; }
-
+    public Wallet? Wallet { get; set; }
     public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
     public ICollection<Order> Orders { get; set; } = new List<Order>();
     public ICollection<Conversation> Conversations { get; set; } = new List<Conversation>();
@@ -23,4 +23,5 @@ public class User
     public ICollection<ForumPost> ForumPosts { get; set; } = new List<ForumPost>();
     public ICollection<ForumComment> ForumComments { get; set; } = new List<ForumComment>();
     public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+    public ICollection<Address> Addresses { get; set; } = new List<Address>();
 }

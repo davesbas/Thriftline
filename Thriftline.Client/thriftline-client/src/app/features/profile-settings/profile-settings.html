@@ -1,0 +1,55 @@
+<app-header />
+<div class="settings-page">
+  <a routerLink="/profile" class="back-link">
+    <mat-icon>arrow_back</mat-icon>
+    Kembali
+  </a>
+
+  <h1>Pengaturan Profil</h1>
+
+  @if (isLoading()) {
+    <p class="settings-status">Memuat...</p>
+  } @else {
+    <div class="avatar-section">
+      @if (avatarUrl()) {
+        <img [src]="avatarUrl()" alt="" class="avatar-section__preview" />
+      } @else {
+        <div class="avatar-section__preview avatar-section__preview--placeholder">
+          <mat-icon>person</mat-icon>
+        </div>
+      }
+      <input #fileInput type="file" accept="image/jpeg,image/png,image/webp" hidden (change)="onAvatarSelected($event)" />
+      <button mat-stroked-button type="button" (click)="fileInput.click()" [disabled]="isUploading()">
+        {{ isUploading() ? 'Mengunggah...' : 'Ganti Foto' }}
+      </button>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nama Lengkap</mat-label>
+        <input matInput formControlName="fullName" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>No. Telepon</mat-label>
+        <input matInput formControlName="phoneNumber" placeholder="08xxxxxxxxxx" />
+        @if (form.controls.phoneNumber.hasError('required') && form.controls.phoneNumber.touched) {
+          <mat-error>Nomor HP wajib diisi.</mat-error>
+        }
+        @if (form.controls.phoneNumber.hasError('pattern') && form.controls.phoneNumber.touched) {
+          <mat-error>Format harus 08xxxxxxxxxx atau +628xxxxxxxxxx.</mat-error>
+        }
+      </mat-form-field>
+
+      <a routerLink="/profile/addresses" class="settings-link">
+        <mat-icon>location_on</mat-icon>
+        <span>Kelola Alamat Pengiriman</span>
+        <mat-icon class="settings-link__chevron">chevron_right</mat-icon>
+      </a>
+
+      <button mat-flat-button color="primary" type="submit" class="full-width" [disabled]="isSubmitting()">
+        {{ isSubmitting() ? 'Menyimpan...' : 'Simpan Perubahan' }}
+      </button>
+    </form>
+  }
+</div>

@@ -1,0 +1,31 @@
+<app-header />
+<div class="notif-page">
+  <div class="notif-page__header">
+    <h1>Notifications</h1>
+    <button mat-button (click)="markAllAsRead()">Tandai Semua Dibaca</button>
+  </div>
+
+  @if (isLoading()) {
+    <p class="notif-status">Memuat notifikasi...</p>
+  } @else if (notifications().length === 0) {
+    <p class="notif-status">Belum ada notifikasi.</p>
+  } @else {
+    <div class="notif-list">
+      @for (notification of notifications(); track notification.id) {
+        <div class="notif-item" [class.notif-item--unread]="!notification.isRead" (click)="openNotification(notification)">
+          <div class="notif-item__icon" [style.background]="colorFor(notification.type)">
+            <mat-icon>{{ iconFor(notification.type) }}</mat-icon>
+          </div>
+          <div class="notif-item__body">
+            <p class="notif-item__title">{{ notification.title }}</p>
+            <p class="notif-item__message">{{ notification.message }}</p>
+            <p class="notif-item__date">{{ formatDate(notification.createdAt) }}</p>
+          </div>
+          @if (!notification.isRead) {
+            <span class="notif-item__dot"></span>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

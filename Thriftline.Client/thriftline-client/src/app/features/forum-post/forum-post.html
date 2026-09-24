@@ -1,0 +1,169 @@
+<app-header />
+<div class="post-page">
+  @if (isLoading()) {
+    <p class="post-status">Memuat diskusi...</p>
+  } @else if (!post()) {
+    <p class="post-status">Diskusi tidak ditemukan.</p>
+  } @else {
+    <a routerLink="/forum" class="back-link">
+      <mat-icon>arrow_back</mat-icon>
+      Kembali
+    </a>
+
+    <div class="post-card">
+      <div class="post-card__header">
+        <div class="post-card__author">
+          @if (post()!.authorAvatarUrl) {
+            <img class="post-card__avatar-img" [src]="post()!.authorAvatarUrl" alt="" />
+          }
+          <div>
+            <p class="post-card__title">{{ post()!.title }}</p>
+            <p class="post-card__meta">&#64;{{ post()!.authorName }} &middot; {{ formatDate(post()!.createdAt) }}</p>
+          </div>
+        </div>
+        @if (isPostOwner()) {
+          <button mat-icon-button (click)="deletePost()">
+            <mat-icon>delete_outline</mat-icon>
+          </button>
+        }
+      </div>
+      <p class="post-card__content">{{ post()!.content }}</p>
+
+      @if (post()!.productId) {
+        <a class="post-card__product" [routerLink]="['/product', post()!.productId]">
+          @if (post()!.productImageUrl) {
+            <img [src]="post()!.productImageUrl" [alt]="post()!.productName" />
+          } @else {
+            <div class="post-card__product-placeholder">
+              <mat-icon>image</mat-icon>
+            </div>
+          }
+          <div class="post-card__product-info">
+            <p>{{ post()!.productName }}</p>
+            @if (post()!.productPrice !== null) {
+              <span>{{ formatPrice(post()!.productPrice!) }}</span>
+            }
+          </div>
+        </a>
+      }
+
+      @if (post()!.media.length > 0) {
+        <div class="post-card__media">
+          @for (item of post()!.media; track item.url) {
+            @if (item.mediaType === MEDIA_TYPE_VIDEO) {
+              <video [src]="item.url" controls></video>
+            } @else {
+              <img [src]="item.url" alt="" />
+            }
+          }
+        </div>
+      }
+
+      <button class="post-card__like" type="button" (click)="toggleLike()">
+        <mat-icon>{{ post()!.isLikedByMe ? 'favorite' : 'favorite_border' }}</mat-icon>
+        {{ post()!.likeCount }} Suka
+      </button>
+    </div>
+
+    <h2 class="comments-title">Komentar ({{ post()!.comments.length }})</h2>
+
+    <div class="comment-list">
+      @for (comment of post()!.comments; track comment.id) {
+        <div class="comment-item">
+          <div class="comment-item__body">
+            <div class="comment-item__author">
+              @if (comment.authorAvatarUrl) {
+                <img class="comment-item__avatar-img" [src]="comment.authorAvatarUrl" alt="" />
+              }
+              <p class="comment-item__author-name">&#64;{{ comment.authorName }}</p>
+            </div>
+            <p class="comment-item__content">{{ comment.content }}</p>
+
+            @if (comment.productId) {
+              <a class="comment-item__product" [routerLink]="['/product', comment.productId]">
+                @if (comment.productImageUrl) {
+                  <img [src]="comment.productImageUrl" [alt]="comment.productName" />
+                }
+                <div class="comment-item__product-info">
+                  <p>{{ comment.productName }}</p>
+                  @if (comment.productPrice !== null) {
+                    <span>{{ formatPrice(comment.productPrice!) }}</span>
+                  }
+                </div>
+              </a>
+            }
+
+            <p class="comment-item__date">{{ formatDate(comment.createdAt) }}</p>
+          </div>
+          @if (isCommentOwner(comment.authorId)) {
+            <button mat-icon-button (click)="deleteComment(comment.id)">
+              <mat-icon>close</mat-icon>
+            </button>
+          }
+        </div>
+      } @empty {
+        <p class="post-status">Belum ada komentar.</p>
+      }
+    </div>
+
+    @if (myStore(); as store) {
+      <div class="comment-composer__identity">
+        <button
+          type="button"
+          class="identity-btn"
+          [class.identity-btn--active]="commentAsStoreId === null"
+          (click)="commentAsStoreId = null"
+        >
+          Diri Sendiri
+        </button>
+        <button
+          type="button"
+          class="identity-btn"
+          [class.identity-btn--active]="commentAsStoreId === store.id"
+          (click)="commentAsStoreId = store.id"
+        >
+          @if (store.logoUrl) {
+            <img [src]="store.logoUrl" alt="" />
+          } @else {
+            <mat-icon>storefront</mat-icon>
+          }
+          {{ store.name }}
+        </button>
+      </div>
+    }
+
+    @if (myProducts().length > 0) {
+      <button type="button" class="comment-composer__trigger" (click)="openProductPicker()">
+        <mat-icon>sell</mat-icon>
+        Lampirkan produk
+      </button>
+    }
+
+    @if (selectedProduct(); as sp) {
+      <div class="comment-product-chip">
+        @if (sp.media[0]?.url) {
+          <img [src]="sp.media[0].url" alt="" />
+        }
+        <div class="comment-product-chip-info">
+          <p>{{ sp.name }}</p>
+          <span>{{ formatPrice(sp.price) }}</span>
+        </div>
+        <button mat-icon-button type="button" (click)="clearSelectedProduct()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    }
+
+    <div class="comment-composer">
+      <input
+        type="text"
+        placeholder="Tulis komentar..."
+        [(ngModel)]="newComment"
+        (keyup.enter)="submitComment()"
+      />
+      <button mat-icon-button color="primary" [disabled]="isSubmitting()" (click)="submitComment()">
+        <mat-icon>send</mat-icon>
+      </button>
+    </div>
+  }
+</div>

@@ -1,0 +1,63 @@
+<header class="app-header">
+  <a routerLink="/" class="app-header__logo">THRIFTLINE</a>
+
+  <div class="app-header__actions">
+    <button mat-icon-button aria-label="Cart" routerLink="/cart">
+      <mat-icon>shopping_cart</mat-icon>
+      @if (cartCount() > 0) {
+        <span class="badge">{{ cartCount() }}</span>
+      }
+    </button>
+    <button mat-icon-button aria-label="Pesan" routerLink="/conversations">
+      <mat-icon>chat_bubble</mat-icon>
+    </button>
+    <button mat-icon-button aria-label="Forum" routerLink="/forum">
+      <mat-icon>forum</mat-icon>
+    </button>
+    <button mat-icon-button aria-label="Notifications" routerLink="/notifications">
+      <mat-icon>notifications</mat-icon>
+      @if (unreadCount() > 0) {
+        <span class="badge">{{ unreadCount() }}</span>
+      }
+    </button>
+
+    @if (authService.isLoggedIn()) {
+      <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="Akun" class="avatar-button">
+        @if (avatarUrl()) {
+          <img class="avatar-button__img" [src]="avatarUrl()" alt="" />
+        } @else {
+          <mat-icon>account_circle</mat-icon>
+        }
+      </button>
+      <mat-menu #userMenu="matMenu">
+        <div class="user-menu-name">{{ authService.currentUser()?.fullName }}</div>
+        <button mat-menu-item routerLink="/profile">
+          <mat-icon>account_circle</mat-icon>
+          <span>Profil Saya</span>
+        </button>
+        <button mat-menu-item routerLink="/store">
+          <mat-icon>storefront</mat-icon>
+          <span>Toko Saya</span>
+        </button>
+        <button mat-menu-item routerLink="/orders">
+          <mat-icon>receipt_long</mat-icon>
+          <span>Pesanan Saya</span>
+        </button>
+        <button mat-menu-item routerLink="/profile/posts">
+          <mat-icon>forum</mat-icon>
+          <span>Postingan Saya</span>
+        </button>
+        <button mat-menu-item routerLink="/wishlist">
+          <mat-icon>favorite_border</mat-icon>
+          <span>Produk Favorit</span>
+        </button>
+        <button mat-menu-item (click)="logout()">
+          <mat-icon>logout</mat-icon>
+          <span>Keluar</span>
+        </button>
+      </mat-menu>
+    } @else {
+      <button mat-stroked-button routerLink="/login" class="login-button">Masuk</button>
+    }
+  </div>
+</header>

@@ -1,0 +1,39 @@
+<app-header />
+<div class="wishlist-page">
+  <a routerLink="/profile" class="back-link">
+    <mat-icon>arrow_back</mat-icon>
+    Kembali
+  </a>
+
+  <h1>Produk Favorit</h1>
+
+  @if (isLoading()) {
+    <p class="wishlist-status">Memuat...</p>
+  } @else if (products().length === 0) {
+    <p class="wishlist-status">Belum ada produk favorit. Ketuk ikon hati di produk untuk menyimpannya di sini.</p>
+  } @else {
+    <div class="product-grid">
+      @for (product of products(); track product.id) {
+        <div class="product-card" [routerLink]="['/product', product.id]">
+          <div class="product-card__image">
+            @if (product.primaryImageUrl) {
+              <img [src]="product.primaryImageUrl" [alt]="product.name" />
+            } @else {
+              <div class="product-card__placeholder">
+                <mat-icon>image</mat-icon>
+              </div>
+            }
+            <button type="button" class="product-card__wishlist" (click)="removeFromWishlist($event, product)">
+              <mat-icon>favorite</mat-icon>
+            </button>
+          </div>
+          <div class="product-card__body">
+            <p class="product-card__name">{{ product.name }}</p>
+            <p class="product-card__price">{{ formatPrice(product.price) }}</p>
+            <p class="product-card__store">{{ product.storeName }}</p>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

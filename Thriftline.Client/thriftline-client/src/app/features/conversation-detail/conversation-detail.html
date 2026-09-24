@@ -1,0 +1,64 @@
+<div class="chat-page">
+  @if (isLoading() && !conversation()) {
+    <p class="chat-status">Memuat percakapan...</p>
+  } @else if (conversation()) {
+    <div class="chat-header">
+      <button mat-icon-button class="chat-header__back" routerLink="/conversations" aria-label="Kembali">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h1>{{ conversation()!.storeName }}</h1>
+    </div>
+
+    <div class="chat-messages">
+      @for (message of conversation()!.messages; track message.id) {
+        <div class="chat-bubble" [class.chat-bubble--mine]="isMine(message)">
+          @if (message.productId) {
+            <a class="chat-bubble__product" [routerLink]="['/product', message.productId]">
+              @if (message.productImageUrl) {
+                <img [src]="message.productImageUrl" [alt]="message.productName" />
+              } @else {
+                <div class="chat-bubble__product-placeholder">
+                  <mat-icon>image</mat-icon>
+                </div>
+              }
+              <div class="chat-bubble__product-info">
+                <p class="chat-bubble__product-name">{{ message.productName }}</p>
+                @if (message.productPrice !== null) {
+                  <p class="chat-bubble__product-price">{{ formatPrice(message.productPrice) }}</p>
+                }
+              </div>
+            </a>
+          }
+          <p class="chat-bubble__content">{{ message.content }}</p>
+          <span class="chat-bubble__time">{{ formatTime(message.sentAt) }}</span>
+        </div>
+      }
+    </div>
+
+    @if (pendingProduct()) {
+      <div class="chat-pending">
+        @if (pendingProduct()!.imageUrl) {
+          <img [src]="pendingProduct()!.imageUrl" [alt]="pendingProduct()!.name" />
+        } @else {
+          <div class="chat-pending__placeholder">
+            <mat-icon>image</mat-icon>
+          </div>
+        }
+        <div class="chat-pending__info">
+          <p class="chat-pending__name">{{ pendingProduct()!.name }}</p>
+          <p class="chat-pending__price">{{ formatPrice(pendingProduct()!.price) }}</p>
+        </div>
+        <button mat-icon-button aria-label="Batalkan lampiran" (click)="dismissPendingProduct()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    }
+
+    <div class="chat-input">
+      <input type="text" placeholder="Tulis pesan..." [(ngModel)]="newMessage" (keyup.enter)="send()" />
+      <button mat-icon-button color="primary" [disabled]="isSending()" (click)="send()">
+        <mat-icon>send</mat-icon>
+      </button>
+    </div>
+  }
+</div>

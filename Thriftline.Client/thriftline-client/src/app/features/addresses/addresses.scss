@@ -1,0 +1,146 @@
+.addresses-page {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: 100vh;
+  background: #f7f7fb;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #555;
+  text-decoration: none;
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.addresses-page__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+
+  h1 {
+    font-size: 1.3rem;
+    font-weight: 800;
+    margin: 0;
+  }
+}
+
+.addresses-status {
+  text-align: center;
+  color: #888;
+  padding: 60px 0;
+}
+
+.address-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.address-card {
+  background: white;
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 2px solid transparent;
+
+  &--primary {
+    border-color: #4f6bff;
+  }
+}
+
+.address-card__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.address-card__label {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.address-card__badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.address-card__recipient {
+  font-size: 0.85rem;
+  color: #555;
+  margin: 0 0 4px;
+}
+
+.address-card__full {
+  font-size: 0.85rem;
+  color: #777;
+  margin: 0 0 10px;
+  line-height: 1.4;
+}
+
+.address-card__actions {
+  display: flex;
+  gap: 4px;
+}
+
+.address-form-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 100;
+}
+
+.address-form {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 16px 16px 0 0;
+  padding: 20px;
+  z-index: 101;
+  max-width: 600px;
+  margin: 0 auto;
+  max-height: 85vh;
+  overflow-y: auto;
+
+  h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0 0 12px;
+  }
+}
+
+.full-width {
+  width: 100%;
+}
+
+.address-form__primary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  margin: 4px 0 16px;
+  cursor: pointer;
+}
+
+.address-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}

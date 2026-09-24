@@ -1,0 +1,193 @@
+$primary: #4f6bff;
+
+.profile-page {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: 100vh;
+  background: #f7f7fb;
+}
+
+.profile-status {
+  text-align: center;
+  color: #888;
+  padding: 60px 0;
+}
+
+.profile-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px 20px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin-bottom: 16px;
+}
+
+.profile-card__avatar {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto 12px;
+  display: block;
+  border: 3px solid $primary;
+}
+
+.profile-card__avatar--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eef1ff;
+  color: $primary;
+
+  mat-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+  }
+}
+
+.profile-card__name-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  h1 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  a {
+    color: #999;
+    display: flex;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
+
+.profile-card__address {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: #888;
+  font-size: 0.85rem;
+  margin: 6px 0 0;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.profile-menu {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.profile-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  text-decoration: none;
+  color: #333;
+  border-bottom: 1px solid #f0f0f3;
+  cursor: pointer;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  span {
+    flex: 1;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  mat-icon {
+    color: $primary;
+  }
+}
+
+.profile-menu__chevron {
+  color: #ccc !important;
+  flex: 0 !important;
+}
+
+.profile-menu__item--disabled {
+  color: #aaa;
+  cursor: not-allowed;
+
+  mat-icon {
+    color: #ccc;
+  }
+}
+
+.profile-menu__soon {
+  flex: 0 0 auto !important;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #aaa;
+  background: #f0f0f3;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.wallet-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: $primary;
+  border-radius: 16px;
+  padding: 18px 20px;
+  margin-bottom: 16px;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(79, 107, 255, 0.25);
+}
+
+.wallet-card__icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  mat-icon {
+    color: white;
+  }
+}
+
+.wallet-card__info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.wallet-card__label {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.wallet-card__balance {
+  color: white;
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.wallet-card__chevron {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+

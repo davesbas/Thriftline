@@ -1,0 +1,42 @@
+<app-header />
+<div class="review-detail-page">
+  <a routerLink="/orders" class="back-link">
+    <mat-icon>arrow_back</mat-icon>
+    Kembali
+  </a>
+
+  <h1>Ulasan Saya</h1>
+
+  @if (isLoading()) {
+    <p class="review-detail-status">Memuat ulasan...</p>
+  } @else if (loadError() || !review()) {
+    <p class="review-detail-status">Ulasan tidak ditemukan.</p>
+  } @else {
+    <div class="review-detail-card">
+      <div class="review-detail-card__product">
+        @if (review()!.productImageUrl) {
+          <img [src]="review()!.productImageUrl" [alt]="review()!.productName" />
+        } @else {
+          <div class="review-detail-card__placeholder">
+            <mat-icon>image</mat-icon>
+          </div>
+        }
+        <p>{{ review()!.productName }}</p>
+      </div>
+
+      <div class="review-detail-card__stars">
+        @for (s of stars; track s) {
+          <mat-icon>{{ s <= review()!.rating ? 'star' : 'star_border' }}</mat-icon>
+        }
+      </div>
+
+      <p class="review-detail-card__date">{{ formatDate(review()!.createdAt) }}</p>
+
+      @if (review()!.comment) {
+        <p class="review-detail-card__comment">{{ review()!.comment }}</p>
+      } @else {
+        <p class="review-detail-card__comment review-detail-card__comment--empty">Tidak ada komentar.</p>
+      }
+    </div>
+  }
+</div>

@@ -1,0 +1,142 @@
+.auth-page {
+  display: flex;
+  min-height: 100vh;
+}
+
+.auth-hero {
+  flex: 1;
+  display: none;
+  background-image: url('/images/auth-hero.jpg');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+
+  @media (min-width: 900px) {
+    display: block;
+  }
+}
+
+.auth-hero__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.75));
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 32px;
+  color: white;
+}
+
+.auth-hero__logo {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.auth-hero__caption p {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.auth-hero__link {
+  color: white;
+  text-decoration: underline;
+}
+
+.auth-form-panel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background-color: var(--mat-sys-surface);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 32px;
+  border: none;
+  box-shadow: none;
+
+  @media (min-width: 900px) {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  }
+}
+
+.auth-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+
+.auth-subtitle {
+  color: var(--mat-sys-on-surface-variant, #666);
+  margin: 0 0 24px;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+// Trik bikin outline field jadi bentuk pill/rounded penuh (menembus encapsulation Material)
+::ng-deep .pill-field .mdc-notched-outline__leading {
+  border-radius: 24px 0 0 24px !important;
+}
+::ng-deep .pill-field .mdc-notched-outline__trailing {
+  border-radius: 0 24px 24px 0 !important;
+}
+::ng-deep .pill-field .mdc-notched-outline__notch {
+  border-radius: 0 !important;
+}
+
+.pill-button {
+  border-radius: 24px !important;
+  height: 48px;
+  margin-bottom: 12px;
+}
+
+.error-text {
+  color: #b3261e;
+  font-size: 0.875rem;
+  margin: 4px 0 12px;
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: var(--mat-sys-on-surface-variant, #999);
+  margin: 16px 0;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #ddd;
+  }
+
+  span {
+    padding: 0 12px;
+    font-size: 0.875rem;
+  }
+}
+
+.social-button--facebook {
+  background-color: #1877f2 !important;
+  color: white !important;
+}
+
+.auth-legal {
+  font-size: 0.75rem;
+  color: var(--mat-sys-on-surface-variant, #999);
+  text-align: center;
+  margin-top: 16px;
+
+  a {
+    color: inherit;
+    text-decoration: underline;
+  }
+}

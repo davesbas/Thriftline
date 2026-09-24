@@ -10,15 +10,26 @@ public class ForumCommentConfiguration : IEntityTypeConfiguration<ForumComment>
     {
         builder.Property(fc => fc.Content).IsRequired();
 
-        // ForumPost (1) --- (many) ForumComment: comments are owned entirely by the post.
         builder.HasOne(fc => fc.ForumPost)
             .WithMany(fp => fp.Comments)
             .HasForeignKey(fc => fc.ForumPostId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(fc => fc.User)
-            .WithMany(u => u.ForumComments)
+            .WithMany()
             .HasForeignKey(fc => fc.UserId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(c => c.Product)
+            .WithMany()
+            .HasForeignKey(c => c.ProductId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasOne(c => c.Store)
+            .WithMany()
+            .HasForeignKey(c => c.StoreId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

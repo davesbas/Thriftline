@@ -1,0 +1,83 @@
+<div class="auth-page">
+  <div class="auth-hero">
+    <div class="auth-hero__overlay">
+      <span class="auth-hero__logo">THRIFTLINE</span>
+      <div class="auth-hero__caption">
+        <p>New to online thrifting?<br />Let me help you!</p>
+        <a routerLink="/login" class="auth-hero__link">Sudah punya akun? Masuk</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="auth-form-panel">
+    <mat-card class="auth-card" appearance="outlined">
+      <h1 class="auth-title">Let's start here</h1>
+      <p class="auth-subtitle">Fill in your details to begin</p>
+
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="outline" class="pill-field full-width">
+          <mat-label>Nama Lengkap</mat-label>
+          <input matInput formControlName="fullName" />
+          @if (registerForm.controls.fullName.hasError('required') && registerForm.controls.fullName.touched) {
+            <mat-error>Nama wajib diisi.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="pill-field full-width">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" formControlName="email" />
+          @if (registerForm.controls.email.hasError('required') && registerForm.controls.email.touched) {
+            <mat-error>Email wajib diisi.</mat-error>
+          }
+          @if (registerForm.controls.email.hasError('email') && registerForm.controls.email.touched) {
+            <mat-error>Format email tidak valid.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="pill-field full-width">
+          <mat-label>Password</mat-label>
+          <input matInput type="password" formControlName="password" />
+          @if (registerForm.controls.password.hasError('required') && registerForm.controls.password.touched) {
+            <mat-error>Password wajib diisi.</mat-error>
+          }
+          @if (registerForm.controls.password.hasError('minlength') && registerForm.controls.password.touched) {
+            <mat-error>Password minimal 6 karakter.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="pill-field full-width">
+          <mat-label>No. Telepon</mat-label>
+          <input matInput formControlName="phoneNumber" placeholder="08xxxxxxxxxx" />
+          @if (registerForm.controls.phoneNumber.hasError('required') && registerForm.controls.phoneNumber.touched) {
+            <mat-error>Nomor HP wajib diisi.</mat-error>
+          }
+          @if (registerForm.controls.phoneNumber.hasError('pattern') && registerForm.controls.phoneNumber.touched) {
+            <mat-error>Format harus 08xxxxxxxxxx atau +628xxxxxxxxxx</mat-error>
+          }
+        </mat-form-field>
+
+        @if (errorMessage()) {
+          <p class="error-text">{{ errorMessage() }}</p>
+        }
+
+        <button mat-flat-button color="primary" type="submit" class="pill-button full-width" [disabled]="isSubmitting()">
+          {{ isSubmitting() ? 'Memproses...' : 'Sign up' }}
+        </button>
+      </form>
+
+      <div class="auth-divider"><span>or</span></div>
+
+      <button mat-flat-button class="pill-button full-width social-button social-button--facebook" disabled
+        title="Belum tersedia">
+        Connect with Facebook
+      </button>
+      <button mat-stroked-button class="pill-button full-width social-button" disabled title="Belum tersedia">
+        Connect with Google
+      </button>
+
+      <p class="auth-legal">
+        By signing up, you agree with our <a href="#">Terms of Use</a> and <a href="#">Privacy Policy</a>.
+      </p>
+    </mat-card>
+  </div>
+</div>

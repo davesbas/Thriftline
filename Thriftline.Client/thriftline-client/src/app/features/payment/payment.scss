@@ -1,0 +1,165 @@
+.payment-page {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 32px 20px;
+}
+
+.payment-status {
+  text-align: center;
+  color: #888;
+  padding: 60px 0;
+}
+
+.payment-page__title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0 0 20px;
+}
+
+.payment-summary {
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+
+  p {
+    display: flex;
+    justify-content: space-between;
+    margin: 4px 0;
+  }
+}
+
+.payment-methods {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.pay-button {
+  width: 100%;
+  border-radius: 999px !important;
+  height: 50px;
+}
+
+.payment-success {
+  text-align: center;
+  padding: 40px 0;
+
+  h1 {
+    font-size: 1.4rem;
+    margin-bottom: 8px;
+  }
+}
+
+.back-link {
+  display: inline-block;
+  margin-top: 16px;
+  color: #4f6bff;
+  font-weight: 600;
+}
+
+.waiting-screen {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  padding: 20px 0;
+}
+
+.waiting-screen__timer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff3e0;
+  color: #b45309;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 8px 16px;
+  border-radius: 999px;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.va-box,
+.qr-box {
+  width: 100%;
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+}
+
+.va-box__label {
+  display: block;
+  font-size: 0.85rem;
+  color: #888;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.va-box__number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 1.3rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.va-box__hint,
+.qr-box__hint {
+  font-size: 0.8rem;
+  color: #888;
+  margin: 8px 0 0;
+}
+
+.qr-grid {
+  display: grid;
+  grid-template-columns: repeat(15, 1fr);
+  gap: 1px;
+  width: 180px;
+  height: 180px;
+  margin: 0 auto;
+  background: white;
+  border: 8px solid white;
+}
+
+.qr-cell {
+  background: white;
+
+  &--on {
+    background: #1a1a1a;
+  }
+}
+
+.waiting-screen__amount {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-size: 0.95rem;
+
+  strong {
+    color: #4f6bff;
+    font-size: 1.05rem;
+  }
+}
+
+.waiting-screen__expired {
+  font-size: 0.8rem;
+  color: #e11d48;
+  text-align: center;
+  margin: 0;
+}

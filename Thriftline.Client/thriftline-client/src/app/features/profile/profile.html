@@ -1,0 +1,83 @@
+<app-header />
+<div class="profile-page">
+  @if (isLoading()) {
+    <p class="profile-status">Memuat profil...</p>
+  } @else if (loadError()) {
+    <p class="profile-status">{{ loadError() }}</p>
+  } @else if (profile(); as p) {
+    <div class="profile-card">
+      @if (p.profilePictureUrl) {
+        <img class="profile-card__avatar" [src]="p.profilePictureUrl" [alt]="p.fullName" />
+      } @else {
+        <div class="profile-card__avatar profile-card__avatar--placeholder">
+          <mat-icon>person</mat-icon>
+        </div>
+      }
+      <div class="profile-card__name-row">
+        <h1>{{ p.fullName }}</h1>
+        <a routerLink="/profile/settings" aria-label="Edit profil">
+          <mat-icon>edit</mat-icon>
+        </a>
+      </div>
+      @if (primaryAddress(); as addr) {
+        <p class="profile-card__address">
+          <mat-icon>place</mat-icon>
+          {{ addr.fullAddress }}
+        </p>
+      }
+    </div>
+
+    <a class="wallet-card" routerLink="/wallet">
+      <div class="wallet-card__icon">
+        <mat-icon>account_balance_wallet</mat-icon>
+      </div>
+      <div class="wallet-card__info">
+        <span class="wallet-card__label">Dompet Saya</span>
+        <span class="wallet-card__balance">{{ formatPrice(walletBalance()) }}</span>
+      </div>
+      <mat-icon class="wallet-card__chevron">chevron_right</mat-icon>
+    </a>
+
+    <div class="profile-menu">
+      <a class="profile-menu__item" routerLink="/store">
+        <mat-icon>storefront</mat-icon>
+        <span>Toko Saya</span>
+        <mat-icon class="profile-menu__chevron">chevron_right</mat-icon>
+      </a>
+      <a class="profile-menu__item" routerLink="/orders">
+        <mat-icon>receipt_long</mat-icon>
+        <span>Pesanan Saya</span>
+        <mat-icon class="profile-menu__chevron">chevron_right</mat-icon>
+      </a>
+      <a class="profile-menu__item" routerLink="/profile/posts">
+        <mat-icon>forum</mat-icon>
+        <span>Postingan Saya</span>
+        <mat-icon class="profile-menu__chevron">chevron_right</mat-icon>
+      </a>
+      <a class="profile-menu__item" routerLink="/wishlist">
+        <mat-icon>favorite_border</mat-icon>
+        <span>Produk Favorit</span>
+        <mat-icon class="profile-menu__chevron">chevron_right</mat-icon>
+      </a>
+
+      @if (myStore()) {
+        <div class="profile-menu__item profile-menu__item--disabled">
+          <mat-icon>payments</mat-icon>
+          <span>Pendapatan Toko</span>
+          <span class="profile-menu__soon">Segera Hadir</span>
+        </div>
+        <div class="profile-menu__item profile-menu__item--disabled">
+          <mat-icon>star_border</mat-icon>
+          <span>Rating Toko</span>
+          <span class="profile-menu__soon">Segera Hadir</span>
+        </div>
+      }
+
+      <a class="profile-menu__item" routerLink="/profile/settings">
+        <mat-icon>settings</mat-icon>
+        <span>Pengaturan</span>
+        <mat-icon class="profile-menu__chevron">chevron_right</mat-icon>
+      </a>
+    </div>
+  }
+</div>

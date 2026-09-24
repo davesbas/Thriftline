@@ -1,0 +1,84 @@
+<app-header />
+<div class="addresses-page">
+  <a routerLink="/profile/settings" class="back-link">
+    <mat-icon>arrow_back</mat-icon>
+    Kembali
+  </a>
+
+  <div class="addresses-page__header">
+    <h1>Alamat Saya</h1>
+    <button mat-stroked-button (click)="openAddForm()">
+      <mat-icon>add</mat-icon>
+      Tambah
+    </button>
+  </div>
+
+  @if (isLoading()) {
+    <p class="addresses-status">Memuat alamat...</p>
+  } @else if (addresses().length === 0) {
+    <p class="addresses-status">Belum ada alamat tersimpan.</p>
+  } @else {
+    <div class="address-list">
+      @for (address of addresses(); track address.id) {
+        <div class="address-card" [class.address-card--primary]="address.isPrimary">
+          <div class="address-card__header">
+            <span class="address-card__label">{{ address.label }}</span>
+            @if (address.isPrimary) {
+              <span class="address-card__badge">Utama</span>
+            }
+          </div>
+          <p class="address-card__recipient">{{ address.recipientName }} · {{ address.phoneNumber }}</p>
+          <p class="address-card__full">{{ address.fullAddress }}</p>
+
+          <div class="address-card__actions">
+            @if (!address.isPrimary) {
+              <button mat-button (click)="setPrimary(address)">Jadikan Utama</button>
+            }
+            <button mat-button (click)="openEditForm(address)">Edit</button>
+            <button mat-button color="warn" (click)="remove(address)">Hapus</button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  @if (showForm()) {
+    <div class="address-form-backdrop" (click)="cancelForm()"></div>
+    <div class="address-form">
+      <h2>{{ editingId() ? 'Edit Alamat' : 'Tambah Alamat' }}</h2>
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Label (mis. Rumah, Kantor)</mat-label>
+          <input matInput formControlName="label" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nama Penerima</mat-label>
+          <input matInput formControlName="recipientName" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>No. Telepon</mat-label>
+          <input matInput formControlName="phoneNumber" placeholder="08xxxxxxxxxx" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Alamat Lengkap</mat-label>
+          <textarea matInput formControlName="fullAddress" rows="3"></textarea>
+        </mat-form-field>
+
+        <label class="address-form__primary">
+          <input type="checkbox" formControlName="isPrimary" />
+          Jadikan alamat utama
+        </label>
+
+        <div class="address-form__actions">
+          <button mat-button type="button" (click)="cancelForm()">Batal</button>
+          <button mat-flat-button color="primary" type="submit" [disabled]="isSaving()">
+            {{ isSaving() ? 'Menyimpan...' : 'Simpan' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+</div>
